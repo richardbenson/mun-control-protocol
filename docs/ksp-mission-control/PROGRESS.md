@@ -5,12 +5,12 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 ---
 
 ## Phase 1 — Scaffolding & repo
-- **Status**: in-progress
+- **Status**: complete
 - **Branch**: `feature/ksp-mission-control-phase-01`
 - **Dependencies**: none
 - **Started**: 2026-05-10
-- **Completed**:
-- **Notes**:
+- **Completed**: 2026-05-10
+- **Notes**: NuGet packages pinned — ModelContextProtocol 1.3.0, KRPC.Client 0.5.4 (NU1701 suppressed on MCP project — package only ships .NET Framework targets but works over TCP on net8.0). GitHub push + PR deferred: gh CLI not yet installed on Windows; install it before Phase 2 and push main, feature/ksp-mission-control, and feature/ksp-mission-control-phase-01, then open PR into feature/ksp-mission-control.
 
 ## Phase 2 — Vertical slice: `get_career_state`
 - **Status**: not-started
