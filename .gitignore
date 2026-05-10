@@ -1,0 +1,15 @@
+# Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# Per-machine MSBuild config (copy from Directory.Build.props.template)
+Directory.Build.props.user
+
+# Build outputs — KSP supplies these at runtime
+deploy/GameData/KSPMissionControl/*.dll

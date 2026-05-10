@@ -1,0 +1,14 @@
+<Project>
+
+  <!--
+    Per-machine configuration. Copy this file to Directory.Build.props.user and set KspInstallDir
+    to your local Kerbal Space Program installation path.
+
+    NOTE: If dotnet build fails with "Assembly-CSharp.dll not found", you have not yet created
+    Directory.Build.props.user from this template. Do that first, then set the correct path below.
+  -->
+  <PropertyGroup>
+    <KspInstallDir>C:\Path\To\Kerbal Space Program</KspInstallDir>
+  </PropertyGroup>
+
+</Project>
