@@ -7,7 +7,7 @@ Stand up the `KSPMissionControl.Career` kRPC service extension, establish the th
 This is the highest-risk phase in the project. It introduces:
 - A second build artefact (`KSPMissionControl.Career.dll`) that lives in KSP's `GameData/`
 - A Unity-thread-safety constraint that, if broken, causes intermittent NullReferenceExceptions
-- An external code-generation step (`krpc-clientgen`) that requires a running game
+- An external code-generation step (`krpc-clientgen`) — can be run offline against the deployed DLL (no running game needed; see Phase 3 PROGRESS notes for the exact command)
 
 Every later phase that adds a Career service follows this phase's pattern. **The code style and threading approach established here is load-bearing.** Take the time to do it right.
 
@@ -24,7 +24,7 @@ The threading rule, restated from the requirements doc: KSP API calls must run o
 
 ## Acceptance criteria
 1. `dotnet build` produces `KSPMissionControl.Career.dll`; the deploy script copies it to `$KspInstallDir/GameData/KSPMissionControl/`.
-2. With KSP launched against a career save and the addon loaded, `krpc-clientgen csharp KSPMissionControl ...` produces a stubs file. The file is checked in.
+2. `krpc-clientgen csharp KSPMissionControl ...` produces a stubs file from the deployed DLL (KSP does not need to be running). The file is checked in.
 3. `get_tech_tree` MCP tool returns a non-empty list of tech nodes whose statuses (unlocked / available / locked) match what's visible in-game in the R&D tree.
 4. The MCP tool's response includes, per node: node id, title, science cost, status, and the list of part names in that node.
 5. `dotnet test` still passes (a new test asserts `TechNode` JSON round-trip; the new MCP tool gets a unit test mocking the kRPC stub).

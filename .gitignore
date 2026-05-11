@@ -13,3 +13,7 @@ Directory.Build.props.user
 
 # Build outputs — KSP supplies these at runtime
 deploy/GameData/KSPMissionControl/*.dll
+
+# Release packaging output
+publish/
+KSPMissionControl-v*.zip

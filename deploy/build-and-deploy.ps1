@@ -1,0 +1,88 @@
+#Requires -Version 5.1
+<#
+.SYNOPSIS
+    Builds and deploys KSPMissionControl.Career, regenerates kRPC stubs if
+    Python is available, then builds KSPMissionControl.MCP.
+
+.PARAMETER KspInstallDir
+    Path to the KSP installation root (contains KSP_x64.exe).
+    Falls back to $env:KspInstallDir if not provided.
+
+.EXAMPLE
+    .\build-and-deploy.ps1 "C:\Games\KSP"
+    .\build-and-deploy.ps1   # uses $env:KspInstallDir
+#>
+param(
+    [string]$KspInstallDir = $env:KspInstallDir
+)
+
+$ErrorActionPreference = "Stop"
+
+if (-not $KspInstallDir) {
+    Write-Error "KspInstallDir is required. Pass it as an argument or set `$env:KspInstallDir."
+}
+
+$projectPath = Join-Path $PSScriptRoot "..\src\KSPMissionControl.Career\KSPMissionControl.Career.csproj"
+$mcpProject  = Join-Path $PSScriptRoot "..\src\KSPMissionControl.MCP\KSPMissionControl.MCP.csproj"
+$destDir     = Join-Path $KspInstallDir "GameData\KSPMissionControl"
+$stubsOut    = Join-Path $PSScriptRoot "..\src\KSPMissionControl.MCP\Krpc\KSPMissionControlStubs.cs"
+
+# 1. Build and deploy the Career DLL
+Write-Host "Building KSPMissionControl.Career (Release)..."
+dotnet build $projectPath -c Release /p:KspInstallDir="$KspInstallDir" --nologo -v minimal
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+$buildOut  = Join-Path $PSScriptRoot "..\src\KSPMissionControl.Career\bin\Release\net472"
+$sharedOut = Join-Path $PSScriptRoot "..\src\KSPMissionControl.Shared\bin\Release\net472"
+
+if (-not (Test-Path $destDir)) {
+    New-Item -ItemType Directory -Path $destDir | Out-Null
+}
+
+Copy-Item -Path (Join-Path $buildOut  "KSPMissionControl.Career.dll") -Destination $destDir -Force
+Write-Host "  Deployed KSPMissionControl.Career.dll -> $destDir"
+Copy-Item -Path (Join-Path $sharedOut "KSPMissionControl.Shared.dll") -Destination $destDir -Force
+Write-Host "  Deployed KSPMissionControl.Shared.dll (net472) -> $destDir"
+
+# 2. Regenerate kRPC stubs from the deployed DLL
+#    Needed when a [KRPCProcedure] is added, removed, or its signature changes.
+#    Safe to skip if only implementation bodies changed.
+$careerDll = Join-Path $destDir "KSPMissionControl.Career.dll"
+Write-Host ""
+
+if (Get-Command python -ErrorAction SilentlyContinue) {
+    Write-Host "Regenerating kRPC stubs from deployed DLL..."
+    $pyScript = @"
+import sys
+sys.argv = ['krpc-clientgen', 'csharp', 'KSPMissionControl',
+            r'$careerDll', '--ksp', r'$KspInstallDir', '-o', r'$stubsOut']
+from krpctools.clientgen import main
+main()
+"@
+    $tmpPy = [System.IO.Path]::GetTempFileName() + ".py"
+    [System.IO.File]::WriteAllText($tmpPy, $pyScript, [System.Text.Encoding]::UTF8)
+    try {
+        python $tmpPy
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "krpc-clientgen exited with code $LASTEXITCODE. Stubs NOT updated."
+            Write-Warning 'Install with: pip install "krpctools==0.5.4" "setuptools<71"'
+            exit $LASTEXITCODE
+        }
+        Write-Host "  Stubs updated -> $stubsOut"
+    } finally {
+        Remove-Item $tmpPy -ErrorAction SilentlyContinue
+    }
+} else {
+    Write-Host "  [stub regen skipped -- python not found]"
+    Write-Host "  If you changed a [KRPCProcedure] signature, install Python then re-run this script:"
+    Write-Host '    pip install "krpctools==0.5.4" "setuptools<71"'
+}
+
+# 3. Build the MCP server (picks up any stub changes)
+Write-Host ""
+Write-Host "Building KSPMissionControl.MCP..."
+dotnet build $mcpProject --nologo -v minimal
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+Write-Host ""
+Write-Host "Done. Restart KSP to load the updated Career addon."
