@@ -78,4 +78,4 @@ The implementation plan and per-phase design docs live in [docs/ksp-mission-cont
 
 ## License
 
-Currently a private project. License TBD.
+MIT — see [LICENSE](LICENSE).
