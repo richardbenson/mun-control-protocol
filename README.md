@@ -79,3 +79,5 @@ The implementation plan and per-phase design docs live in [docs/ksp-mission-cont
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+Third-party notices (kRPC/LGPL-3.0, Google.Protobuf/BSD-3-Clause) — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
