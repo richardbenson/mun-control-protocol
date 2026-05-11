@@ -65,5 +65,23 @@ namespace KRPC.Client.Services.KSPMissionControl
             ByteString _data = connection.Invoke ("KSPMissionControl", "GetTechTree");
             return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
         }
+
+        [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetScienceSubjects")]
+        public string GetScienceSubjects (string body, string situation)
+        {
+            var _args = new ByteString[] {
+                global::KRPC.Client.Encoder.Encode (body, typeof(string)),
+                global::KRPC.Client.Encoder.Encode (situation, typeof(string))
+            };
+            ByteString _data = connection.Invoke ("KSPMissionControl", "GetScienceSubjects", _args);
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
+
+        [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetSciencePerBodySummary")]
+        public string GetSciencePerBodySummary ()
+        {
+            ByteString _data = connection.Invoke ("KSPMissionControl", "GetSciencePerBodySummary");
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
     }
 }

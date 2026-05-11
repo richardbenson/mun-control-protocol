@@ -26,6 +26,14 @@ public static class TechTreeService
     [KRPCProcedure]
     public static string GetPartByName(string name) => PartsService.GetPartByName(name);
 
+    /// <summary>Returns science subjects as a JSON array. Filter by body (e.g. "Kerbin") and optionally by situation (Landed, Splashed, FlyingLow, FlyingHigh, InSpaceLow, InSpaceHigh). Empty string means no filter on that axis.</summary>
+    [KRPCProcedure]
+    public static string GetScienceSubjects(string body, string situation) => ScienceService.GetScienceSubjects(body, situation);
+
+    /// <summary>Returns per-body science summary as a JSON array with fields: body, subjectsTotal, subjectsCompleted, scienceRemaining.</summary>
+    [KRPCProcedure]
+    public static string GetSciencePerBodySummary() => ScienceService.GetSciencePerBodySummary();
+
     internal static void RefreshCache()
     {
         var rd = ResearchAndDevelopment.Instance;

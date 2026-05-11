@@ -8,4 +8,6 @@ internal interface IKrpcConnection : IDisposable
     string GetTechTree();
     string GetPartsByCategory(string category);
     string GetPartByName(string name);
+    string GetScienceSubjects(string body, string situation);
+    string GetSciencePerBodySummary();
 }

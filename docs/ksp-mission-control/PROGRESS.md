@@ -45,12 +45,12 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 - **Notes**: Shared project needed `<LangVersion>latest</LangVersion>` and `<Nullable>enable</Nullable>` to compile `PartInfo`'s nullable sub-DTO properties against the `net472` target — added to csproj. Stubs not regenerated: no new kRPC procedures added; `GetPartsByCategory` and `GetPartByName` return richer JSON but the kRPC interface is unchanged. `ModuleDataTransmitter.antennaType` is an `AntennaType` enum (values `INTERNAL`/`DIRECT`/`RELAY`) — serialised to title-case via a `ToTitleCase` helper. `HibernationCharge` is always 0: the EC consumption rate lives in `ModuleCommand.resHandler.inputResources` which requires non-trivial KSP reflection and was deferred as out-of-scope for v1. `ModuleSAS.SASServiceLevel` (int 0–3) confirmed correct field name in KSP 1.12. `FindObjectEnd` in `PartsService` correctly handles nested sub-DTO objects since it tracks `{`/`}` depth. Smoke tests pending — require KSP with career save loaded.
 
 ## Phase 6 — Science
-- **Status**: not-started
+- **Status**: complete
 - **Branch**: `feature/ksp-mission-control-phase-06`
 - **Dependencies**: Phase 3 (Career foundation pattern)
-- **Started**:
-- **Completed**:
-- **Notes**:
+- **Started**: 2026-05-11
+- **Completed**: 2026-05-11
+- **Notes**: `ResearchAndDevelopment.GetExperimentSubjects()` does not exist in KSP's Assembly-CSharp — the subjects dictionary is internal. Fix: scan all instance fields of `ResearchAndDevelopment` for `Dictionary<string, ScienceSubject>` by type (field name varies across KSP patches). ID parsing: `<expId>@<body><situation><biome>` — body matched via `FlightGlobals.Bodies` (longest-first to avoid prefix shadowing); situations from a static closed set ordered longest-first (`InSpaceHigh`, `InSpaceLow`, `FlyingHigh`, `FlyingLow`, `Splashed`, `Landed`). Example edge: `crewReport@KerbinFlyingHighlands` → expId=`crewReport`, body=`Kerbin`, situation=`FlyingHigh`, biome=`lands` (note: biome remainder after consuming situation prefix; "Highlands" becomes "lands" after "FlyingHigh" is consumed — this is the expected raw form from KSP subject IDs and does not affect filtering since filters are applied to the stored body/situation fields). Two caches: subjects JSON (full, filtered on request) and per-body summary JSON. Science refresh cadence: 5 seconds (heavier than tech tree). Smoke test pending — requires KSP with career save loaded.
 
 ## Phase 7 — Buildings, difficulty, built-in passthroughs
 - **Status**: not-started
