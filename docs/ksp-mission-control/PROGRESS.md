@@ -18,7 +18,7 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 - **Dependencies**: Phase 1
 - **Started**: 2026-05-11
 - **Completed**: 2026-05-11
-- **Notes**: MCP server bootstrap uses `Host.CreateApplicationBuilder(args)` + `services.AddMcpServer().WithStdioServerTransport().WithTools<CareerTools>()`. Tool methods decorated with `[McpServerTool(Name = "...")]`; description comes from XML doc `<summary>` (the attribute has no `Description` property). kRPC SpaceCenter service is `connection.SpaceCenter()` extension method (not `new Service(conn)`). Career property is `.Reputation` (not `.ReputationValue`). Moq requires `[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]` alongside the test project's `InternalsVisibleTo` to proxy internal interfaces. Manual smoke test deferred: requires live KSP + kRPC session — acceptance criterion 2 of PHASE_02.md is pending in-game verification.
+- **Notes**: MCP server bootstrap uses `Host.CreateApplicationBuilder(args)` + `services.AddMcpServer().WithStdioServerTransport().WithTools<CareerTools>()`. Tool methods decorated with `[McpServerTool(Name = "...")]`; description comes from XML doc `<summary>` (the attribute has no `Description` property). kRPC SpaceCenter service is `connection.SpaceCenter()` extension method (not `new Service(conn)`). Career property is `.Reputation` (not `.ReputationValue`). Moq requires `[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]` alongside the test project's `InternalsVisibleTo` to proxy internal interfaces. Smoke test passed 2026-05-11: Claude Desktop returned Funds √1,800,773 / Science 1.8 / Reputation 361.8, matching the in-game HUD.
 
 ## Phase 3 — Career foundation + `get_tech_tree`
 - **Status**: not-started
