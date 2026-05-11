@@ -5,6 +5,7 @@ using Xunit;
 
 namespace KSPMissionControl.MCP.Tests;
 
+
 public sealed class PartsToolsTests
 {
     private const string EnginePart = """{"name":"liquidEngine","title":"LV-T30 Liquid Fuel Engine","category":"Engine","massDry":1.25,"massWet":1.25,"cost":850.0,"techRequired":"basicRocketry","isPurchased":true}""";
@@ -118,5 +119,69 @@ public sealed class PartsToolsTests
         await Assert.ThrowsAsync<ArgumentException>(() => tool.GetPartStatsAsync());
         mock.Verify(c => c.GetPartByName(It.IsAny<string>()), Times.Never);
         mock.Verify(c => c.GetPartsByCategory(It.IsAny<string>()), Times.Never);
+    }
+
+    // A command pod with integrated antenna, battery, and SAS — multiple sub-DTOs populated.
+    private const string MultiModulePod = """
+        {"name":"mk1-3pod","title":"Mk1-3 Command Pod","category":"Pods",
+         "massDry":2.72,"massWet":2.94,"cost":3800.0,"techRequired":"advancedFlightControl","isPurchased":true,
+         "antenna":{"range":5000.0,"type":"Internal","combinable":false,"packetSize":2.0,"packetInterval":1.0},
+         "tank":{"resources":[{"resourceName":"ElectricCharge","maxAmount":150.0},{"resourceName":"MonoPropellant","maxAmount":30.0}]},
+         "command":{"crewCapacity":3,"hasSas":true,"sasLevel":3,"hibernationCharge":0.0}}
+        """;
+
+    private const string StructuralPart = """
+        {"name":"strutConnector","title":"EAS-4 Strut Connector","category":"Structural",
+         "massDry":0.05,"massWet":0.05,"cost":15.0,"techRequired":"start","isPurchased":true}
+        """;
+
+    [Fact]
+    public async Task GetPartStatsAsync_MultiModulePart_PopulatesAllSubDtos()
+    {
+        var mock = new Mock<IKrpcConnection>();
+        mock.Setup(c => c.GetPartByName("mk1-3pod")).Returns(MultiModulePod);
+
+        var tool = new PartsTools(mock.Object);
+        var result = await tool.GetPartStatsAsync(part_name: "mk1-3pod");
+
+        Assert.Single(result);
+        var part = result[0];
+        Assert.Equal("mk1-3pod", part.Name);
+
+        Assert.NotNull(part.Antenna);
+        Assert.Equal(5000.0, part.Antenna!.Range);
+        Assert.Equal("Internal", part.Antenna.Type);
+
+        Assert.NotNull(part.Tank);
+        Assert.Equal(2, part.Tank!.Resources.Count);
+        Assert.Equal("ElectricCharge", part.Tank.Resources[0].ResourceName);
+        Assert.Equal(150.0, part.Tank.Resources[0].MaxAmount);
+
+        Assert.NotNull(part.Command);
+        Assert.Equal(3, part.Command!.CrewCapacity);
+        Assert.True(part.Command.HasSas);
+        Assert.Equal(3, part.Command.SasLevel);
+
+        Assert.Null(part.Engine);
+        Assert.Null(part.SolarPanel);
+    }
+
+    [Fact]
+    public async Task GetPartStatsAsync_StructuralPart_AllSubDtosNull()
+    {
+        var mock = new Mock<IKrpcConnection>();
+        mock.Setup(c => c.GetPartByName("strutConnector")).Returns(StructuralPart);
+
+        var tool = new PartsTools(mock.Object);
+        var result = await tool.GetPartStatsAsync(part_name: "strutConnector");
+
+        Assert.Single(result);
+        var part = result[0];
+        Assert.Equal("strutConnector", part.Name);
+        Assert.Null(part.Engine);
+        Assert.Null(part.Antenna);
+        Assert.Null(part.Tank);
+        Assert.Null(part.Command);
+        Assert.Null(part.SolarPanel);
     }
 }

@@ -176,11 +176,116 @@ public static class PartsService
               .Append(",\"massWet\":").Append(massWet.ToString("R"))
               .Append(",\"cost\":").Append(part.cost.ToString("R"))
               .Append(",\"techRequired\":").Append(JsonString(part.TechRequired))
-              .Append(",\"isPurchased\":").Append(isPurchased ? "true" : "false")
-              .Append('}');
+              .Append(",\"isPurchased\":").Append(isPurchased ? "true" : "false");
+
+            if (part.partPrefab != null)
+            {
+                try { AppendModuleInfo(sb, part.partPrefab); }
+                catch (Exception ex) { Debug.LogWarning("[KSPMissionControl] Module info failed for " + part.name + ": " + ex.Message); }
+            }
+
+            sb.Append('}');
         }
         sb.Append(']');
         return sb.ToString();
+    }
+
+    private static void AppendModuleInfo(StringBuilder sb, Part prefab)
+    {
+        ModuleEngines? engineMod = null;
+        ModuleDataTransmitter? antennaMod = null;
+        bool hasCommand = false;
+        ModuleSAS? sasMod = null;
+        ModuleDeployableSolarPanel? solarMod = null;
+
+        foreach (PartModule mod in prefab.Modules)
+        {
+            if (engineMod == null && mod is ModuleEngines e)
+                engineMod = e;
+            else if (antennaMod == null && mod is ModuleDataTransmitter a)
+                antennaMod = a;
+            else if (!hasCommand && mod is ModuleCommand)
+                hasCommand = true;
+            else if (sasMod == null && mod is ModuleSAS s)
+                sasMod = s;
+            else if (solarMod == null && mod is ModuleDeployableSolarPanel sp)
+                solarMod = sp;
+        }
+
+        if (engineMod != null)
+        {
+            float ispVac = engineMod.atmosphereCurve.Evaluate(0f);
+            float ispAsl = engineMod.atmosphereCurve.Evaluate(1f);
+            double thrustVac = engineMod.maxThrust;
+            // Derive ASL thrust from vacuum thrust scaled by ISP ratio.
+            double thrustAsl = ispVac > 0f ? thrustVac * ispAsl / ispVac : 0.0;
+
+            sb.Append(",\"engine\":{");
+            sb.Append("\"thrustVacuum\":").Append(thrustVac.ToString("R"));
+            sb.Append(",\"thrustAsl\":").Append(thrustAsl.ToString("R"));
+            sb.Append(",\"ispVacuum\":").Append(((double)ispVac).ToString("R"));
+            sb.Append(",\"ispAsl\":").Append(((double)ispAsl).ToString("R"));
+            sb.Append(",\"fuelFlowVacuum\":").Append(((double)engineMod.maxFuelFlow).ToString("R"));
+            sb.Append(",\"propellants\":[");
+            bool firstProp = true;
+            foreach (Propellant prop in engineMod.propellants)
+            {
+                if (!firstProp) sb.Append(',');
+                firstProp = false;
+                sb.Append(JsonString(prop.name));
+            }
+            sb.Append("]}");
+        }
+
+        if (antennaMod != null)
+        {
+            sb.Append(",\"antenna\":{");
+            sb.Append("\"range\":").Append(antennaMod.antennaPower.ToString("R"));
+            sb.Append(",\"type\":").Append(JsonString(ToTitleCase(antennaMod.antennaType.ToString())));
+            sb.Append(",\"combinable\":").Append(antennaMod.antennaCombinable ? "true" : "false");
+            sb.Append(",\"packetSize\":").Append(((double)antennaMod.packetSize).ToString("R"));
+            sb.Append(",\"packetInterval\":").Append(((double)antennaMod.packetInterval).ToString("R"));
+            sb.Append('}');
+        }
+
+        if (prefab.Resources.Count > 0)
+        {
+            sb.Append(",\"tank\":{\"resources\":[");
+            bool firstRes = true;
+            foreach (PartResource res in prefab.Resources)
+            {
+                if (!firstRes) sb.Append(',');
+                firstRes = false;
+                sb.Append("{\"resourceName\":").Append(JsonString(res.resourceName));
+                sb.Append(",\"maxAmount\":").Append(res.maxAmount.ToString("R"));
+                sb.Append('}');
+            }
+            sb.Append("]}");
+        }
+
+        if (hasCommand)
+        {
+            sb.Append(",\"command\":{");
+            sb.Append("\"crewCapacity\":").Append(prefab.CrewCapacity);
+            sb.Append(",\"hasSas\":").Append(sasMod != null ? "true" : "false");
+            sb.Append(",\"sasLevel\":").Append(sasMod != null ? sasMod.SASServiceLevel : 0);
+            // HibernationCharge omitted — requires resHandler inspection, not exposed by kRPC.
+            sb.Append(",\"hibernationCharge\":0}");
+        }
+
+        if (solarMod != null)
+        {
+            sb.Append(",\"solarPanel\":{");
+            sb.Append("\"chargeRate\":").Append(((double)solarMod.chargeRate).ToString("R"));
+            sb.Append(",\"retractable\":").Append(solarMod.retractable ? "true" : "false");
+            sb.Append('}');
+        }
+    }
+
+    private static string ToTitleCase(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return s;
+        return char.ToUpperInvariant(s[0]) + s.Substring(1).ToLowerInvariant();
     }
 
     private static string JsonString(string s) =>
