@@ -11,6 +11,7 @@ namespace KSPMissionControl.Career;
 public sealed class KSPMissionControlAddon : MonoBehaviour
 {
     private float _lastTechTreeRefresh = -999f;
+    private float _lastScienceRefresh = -999f;
 
     private void Awake()
     {
@@ -34,6 +35,13 @@ public sealed class KSPMissionControlAddon : MonoBehaviour
 
         TechTreeService.RefreshCache();
         PartsService.RefreshCache();
+
+        // Science matrix is large; refresh every 5 seconds is sufficient.
+        if (Time.realtimeSinceStartup - _lastScienceRefresh >= 5f)
+        {
+            _lastScienceRefresh = Time.realtimeSinceStartup;
+            ScienceService.RefreshCache();
+        }
     }
 
     private void OnDestroy()
