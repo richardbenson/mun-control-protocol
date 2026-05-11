@@ -17,7 +17,8 @@ try
         .AddSingleton<IKrpcConnection, KrpcConnection>()
         .AddMcpServer()
         .WithStdioServerTransport()
-        .WithTools<CareerTools>();
+        .WithTools<CareerTools>()
+        .WithTools<PartsTools>();
 
     await builder.Build().RunAsync();
 }

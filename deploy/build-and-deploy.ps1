@@ -28,17 +28,17 @@ Write-Host "Building KSPMissionControl.Career (Release)..."
 dotnet build $projectPath -c Release /p:KspInstallDir="$KspInstallDir" --nologo -v minimal
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$buildOut = Join-Path $PSScriptRoot "..\src\KSPMissionControl.Career\bin\Release\net472"
+$buildOut    = Join-Path $PSScriptRoot "..\src\KSPMissionControl.Career\bin\Release\net472"
+$sharedOut   = Join-Path $PSScriptRoot "..\src\KSPMissionControl.Shared\bin\Release\net472"
 
 if (-not (Test-Path $destDir)) {
     New-Item -ItemType Directory -Path $destDir | Out-Null
 }
 
-# Copy Career DLL + Shared DLL (dependency) to GameData.
-foreach ($dll in @("KSPMissionControl.Career.dll", "KSPMissionControl.Shared.dll")) {
-    $src = Join-Path $buildOut $dll
-    Copy-Item -Path $src -Destination $destDir -Force
-    Write-Host "  Deployed $dll -> $destDir"
-}
+# Copy Career DLL and Shared DLL (net472 build — no netstandard.dll dependency) to GameData.
+Copy-Item -Path (Join-Path $buildOut   "KSPMissionControl.Career.dll") -Destination $destDir -Force
+Write-Host "  Deployed KSPMissionControl.Career.dll -> $destDir"
+Copy-Item -Path (Join-Path $sharedOut  "KSPMissionControl.Shared.dll") -Destination $destDir -Force
+Write-Host "  Deployed KSPMissionControl.Shared.dll (net472) -> $destDir"
 
 Write-Host "Done. Restart KSP to load the updated addon."
