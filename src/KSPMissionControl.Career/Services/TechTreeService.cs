@@ -18,6 +18,14 @@ public static class TechTreeService
     [KRPCProcedure]
     public static string GetTechTree() => Cache.Snapshot ?? "[]";
 
+    /// <summary>Returns unlocked parts in the given category as a JSON array (engine, fueltank, command, science, communication, structural, ...).</summary>
+    [KRPCProcedure]
+    public static string GetPartsByCategory(string category) => PartsService.GetPartsByCategory(category);
+
+    /// <summary>Returns the unlocked part with the given internal name as a JSON object, or "null" if not found.</summary>
+    [KRPCProcedure]
+    public static string GetPartByName(string name) => PartsService.GetPartByName(name);
+
     internal static void RefreshCache()
     {
         var rd = ResearchAndDevelopment.Instance;

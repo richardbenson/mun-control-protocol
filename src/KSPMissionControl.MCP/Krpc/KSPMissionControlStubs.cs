@@ -39,6 +39,26 @@ namespace KRPC.Client.Services.KSPMissionControl
             connection = serverConnection;
         }
 
+        [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetPartByName")]
+        public string GetPartByName (string name)
+        {
+            var _args = new ByteString[] {
+                global::KRPC.Client.Encoder.Encode (name, typeof(string))
+            };
+            ByteString _data = connection.Invoke ("KSPMissionControl", "GetPartByName", _args);
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
+
+        [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetPartsByCategory")]
+        public string GetPartsByCategory (string category)
+        {
+            var _args = new ByteString[] {
+                global::KRPC.Client.Encoder.Encode (category, typeof(string))
+            };
+            ByteString _data = connection.Invoke ("KSPMissionControl", "GetPartsByCategory", _args);
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
+
         [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetTechTree")]
         public string GetTechTree ()
         {

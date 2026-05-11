@@ -43,6 +43,8 @@ internal sealed class KrpcConnection : IKrpcConnection
     float IKrpcConnection.Science => SpaceCenter.Science;
     float IKrpcConnection.Reputation => SpaceCenter.Reputation;
     string IKrpcConnection.GetTechTree() => KspMissionControl.GetTechTree();
+    string IKrpcConnection.GetPartsByCategory(string category) => KspMissionControl.GetPartsByCategory(category);
+    string IKrpcConnection.GetPartByName(string name) => KspMissionControl.GetPartByName(name);
 
     public void Dispose()
     {

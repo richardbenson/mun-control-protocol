@@ -28,11 +28,12 @@ public sealed class KSPMissionControlAddon : MonoBehaviour
             scene != GameScenes.TRACKSTATION)
             return;
 
-        // Tech tree changes only on R&D actions; once per second is more than sufficient.
+        // Tech tree and parts unlock state change only on R&D actions; once per second is sufficient.
         if (Time.realtimeSinceStartup - _lastTechTreeRefresh < 1f) return;
         _lastTechTreeRefresh = Time.realtimeSinceStartup;
 
         TechTreeService.RefreshCache();
+        PartsService.RefreshCache();
     }
 
     private void OnDestroy()
