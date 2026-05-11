@@ -21,12 +21,12 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 - **Notes**: MCP server bootstrap uses `Host.CreateApplicationBuilder(args)` + `services.AddMcpServer().WithStdioServerTransport().WithTools<CareerTools>()`. Tool methods decorated with `[McpServerTool(Name = "...")]`; description comes from XML doc `<summary>` (the attribute has no `Description` property). kRPC SpaceCenter service is `connection.SpaceCenter()` extension method (not `new Service(conn)`). Career property is `.Reputation` (not `.ReputationValue`). Moq requires `[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]` alongside the test project's `InternalsVisibleTo` to proxy internal interfaces. Smoke test passed 2026-05-11: Claude Desktop returned Funds √1,800,773 / Science 1.8 / Reputation 361.8, matching the in-game HUD.
 
 ## Phase 3 — Career foundation + `get_tech_tree`
-- **Status**: not-started
+- **Status**: complete
 - **Branch**: `feature/ksp-mission-control-phase-03`
 - **Dependencies**: Phase 2
-- **Started**:
-- **Completed**:
-- **Notes**:
+- **Started**: 2026-05-11
+- **Completed**: 2026-05-11
+- **Notes**: StateCache uses volatile reference swap (immutable snapshot, 64-bit reference write is atomic — no lock needed). TechTreeService returns JSON string from kRPC (not IList<TechNode>) because kRPC's serialiser only handles primitives and remote-object types, not plain data records. Career side builds JSON manually via StringBuilder — no extra NuGet dependency in the GameData DLL. `KSPMissionControlStubs.cs` is a hand-written placeholder; regen command: `krpc-clientgen csharp KSPMissionControl --output src/KSPMissionControl.MCP/Krpc/KSPMissionControlStubs.cs` (requires KSP running with Career addon deployed). KrpcConnection uses type aliases (`SpaceCenterService`, `KspMcService`) to resolve ambiguity between the two `Service` classes. MCP deserialization uses `JsonStringEnumConverter` + `PropertyNameCaseInsensitive` since Career produces camelCase JSON keys. ⚠️ Smoke test (step 9) and stub regen (step 6) still pending — require running KSP with the deployed addon.
 
 ## Phase 4 — Parts catalog (basic)
 - **Status**: not-started

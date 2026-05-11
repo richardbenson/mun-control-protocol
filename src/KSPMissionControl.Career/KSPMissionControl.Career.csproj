@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +17,10 @@
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(KspInstallDir)\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="KRPC">
+      <HintPath>$(KspInstallDir)\GameData\kRPC\KRPC.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="KRPC.SpaceCenter">
