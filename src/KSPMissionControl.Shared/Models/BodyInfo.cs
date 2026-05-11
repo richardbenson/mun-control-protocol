@@ -10,4 +10,5 @@ public sealed class BodyInfo
     public string? Parent { get; set; }
     public double? OrbitalPeriod { get; set; }
     public double? SemiMajorAxis { get; set; }
+    public double RotationPeriodS { get; set; }
 }

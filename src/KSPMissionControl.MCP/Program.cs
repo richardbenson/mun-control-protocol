@@ -18,7 +18,12 @@ try
         .AddMcpServer()
         .WithStdioServerTransport()
         .WithTools<CareerTools>()
-        .WithTools<PartsTools>();
+        .WithTools<PartsTools>()
+        .WithTools<BodiesTools>()
+        .WithTools<VesselsTools>()
+        .WithTools<ScienceTools>()
+        .WithTools<KerbalsTools>()
+        .WithTools<FormulasTools>();
 
     await builder.Build().RunAsync();
 }
