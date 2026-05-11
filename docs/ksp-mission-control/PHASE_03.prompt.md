@@ -62,9 +62,21 @@ Create `deploy/build-and-deploy.ps1`:
 This script is the developer's loop for every Career-side change going forward.
 
 ### 6. Stub generation
-With `KSPMissionControl.Career.dll` deployed and KSP running with a career save loaded:
-- Run `krpc-clientgen csharp KSPMissionControl <appropriate args — see kRPC docs>`. The output is a single `.cs` file containing the typed client stubs for the `KSPMissionControl` service.
-- Place it at `src/KSPMissionControl.MCP/Krpc/KSPMissionControlStubs.cs`.
+With `KSPMissionControl.Career.dll` deployed to `GameData/KSPMissionControl/`, run `krpc-clientgen` offline (KSP does **not** need to be running):
+```
+python -c "
+import sys
+sys.argv = [
+    'krpc-clientgen', 'csharp', 'KSPMissionControl',
+    r'<KspInstallDir>/GameData/KSPMissionControl/KSPMissionControl.Career.dll',
+    '--ksp', r'<KspInstallDir>',
+    '-o', r'src/KSPMissionControl.MCP/Krpc/KSPMissionControlStubs.cs'
+]
+from krpctools.clientgen import main; main()
+" | python
+```
+Requires: `pip install krpctools==0.5.4 setuptools` (one-time setup; `setuptools<71` needed for `pkg_resources`).
+- Place output at `src/KSPMissionControl.MCP/Krpc/KSPMissionControlStubs.cs`.
 - Commit it. Do not edit by hand. If the file needs to change, regenerate.
 
 ### 7. MCP tool

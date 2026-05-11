@@ -21,12 +21,12 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 - **Notes**: MCP server bootstrap uses `Host.CreateApplicationBuilder(args)` + `services.AddMcpServer().WithStdioServerTransport().WithTools<CareerTools>()`. Tool methods decorated with `[McpServerTool(Name = "...")]`; description comes from XML doc `<summary>` (the attribute has no `Description` property). kRPC SpaceCenter service is `connection.SpaceCenter()` extension method (not `new Service(conn)`). Career property is `.Reputation` (not `.ReputationValue`). Moq requires `[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]` alongside the test project's `InternalsVisibleTo` to proxy internal interfaces. Smoke test passed 2026-05-11: Claude Desktop returned Funds √1,800,773 / Science 1.8 / Reputation 361.8, matching the in-game HUD.
 
 ## Phase 3 — Career foundation + `get_tech_tree`
-- **Status**: not-started
+- **Status**: complete
 - **Branch**: `feature/ksp-mission-control-phase-03`
 - **Dependencies**: Phase 2
-- **Started**:
-- **Completed**:
-- **Notes**:
+- **Started**: 2026-05-11
+- **Completed**: 2026-05-11
+- **Notes**: StateCache uses volatile reference swap (immutable snapshot, 64-bit reference write is atomic — no lock needed). TechTreeService returns JSON string from kRPC (not IList<TechNode>) because kRPC's serialiser only handles primitives and remote-object types, not plain data records. Career side builds JSON manually via StringBuilder — no extra NuGet dependency in the GameData DLL. Stub regen does **not** require KSP to be running — `krpctools` reads the deployed DLL directly. One-time setup: `pip install "krpctools==0.5.4" "setuptools<71"`. Regen command: `python -c "import sys; sys.argv=['krpc-clientgen','csharp','KSPMissionControl',r'<KspInstallDir>/GameData/KSPMissionControl/KSPMissionControl.Career.dll','--ksp',r'<KspInstallDir>','-o','src/KSPMissionControl.MCP/Krpc/KSPMissionControlStubs.cs']; from krpctools.clientgen import main; main()"`. KrpcConnection uses type aliases (`SpaceCenterService`, `KspMcService`) to resolve ambiguity between the two `Service` classes. MCP deserialization uses `JsonStringEnumConverter` + `PropertyNameCaseInsensitive` since Career produces camelCase JSON keys. Smoke test passed 2026-05-11: Claude Desktop returned correct tech tree data matching the in-game R&D screen.
 
 ## Phase 4 — Parts catalog (basic)
 - **Status**: not-started

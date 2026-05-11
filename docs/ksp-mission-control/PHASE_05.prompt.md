@@ -80,7 +80,7 @@ No new MCP tools. The existing `get_part_stats` and `get_parts_by_category` auto
 - One additional `PartsToolsTests` case confirming that a part with multiple modules returns all sub-DTOs populated, and a structural part (e.g. a strut) returns them all null.
 
 ### 7. Manual smoke test
-- Deploy + regenerate stubs + rebuild MCP.
+- Deploy Career DLL, regenerate stubs offline (per Phase 3 command), rebuild MCP.
 - In Claude: "what's the vacuum Isp of the LV-909 Terrier?" — match against in-game tooltip (345s in stock 1.12).
 - In Claude: "what's the range of the Communotron 16?" — match against in-game tooltip (500 km direct).
 - In Claude: "how much LiquidFuel does an FL-T400 hold?" — match (180 units).
