@@ -31,42 +31,35 @@ public static class DifficultyService
         var difficulty = pp.Difficulty;
         var career     = pp.Career;
 
-        double commNetRange     = commNet?.rangeModifier     ?? 1.0;
-        double dsnModifier      = commNet?.DSNModifier       ?? 1.0;
-        bool   reqSignalCtrl    = commNet?.requireSignalForControl ?? false;
-        bool   reqSignalSci     = commNet?.requireSignalForScience ?? false;
-        bool   enableCommNet    = commNet?.enableCommNet     ?? true;
+        double commNetRange     = commNet?.rangeModifier            ?? 1.0;
+        double dsnModifier      = commNet?.DSNModifier              ?? 1.0;
+        bool   reqSignalCtrl    = commNet?.requireSignalForControl  ?? false;
         // Occlusion is active when the vacuum multiplier is > 0.
-        bool   occludeBodies    = (commNet?.occlusion_multiplier_vac ?? 0f) > 0f;
-        bool   plasmaBlackout   = commNet?.plasmaBlackout    ?? false;
+        bool   occludeBodies    = (commNet?.occlusionMultiplierVac  ?? 0f) > 0f;
+        bool   plasmaBlackout   = commNet?.plasmaBlackout           ?? false;
 
-        double sciReward        = career?.SciGainMultiplier  ?? 1.0;
-        double fundsReward      = career?.FundsGainMultiplier ?? 1.0;
-        double repReward        = career?.RepGainMultiplier  ?? 1.0;
-        double fundsPenalty     = career?.FundsLossMultiplier ?? 1.0;
-        double repPenalty       = career?.RepLossMultiplier  ?? 1.0;
+        double sciReward        = career?.ScienceGainMultiplier ?? 1.0;
+        double fundsReward      = career?.FundsGainMultiplier   ?? 1.0;
+        double repReward        = career?.RepGainMultiplier     ?? 1.0;
+        double fundsPenalty     = career?.FundsLossMultiplier   ?? 1.0;
+        double repPenalty       = career?.RepLossMultiplier     ?? 1.0;
 
-        double reentryHeat      = difficulty?.ReentryHeatScale          ?? 1.0;
-        double crashTolerance   = difficulty?.CrashTolerance            ?? 1.0;
-        double kerbalGTol       = difficulty?.KerbalGToleranceMultiplier ?? 1.0;
-        bool   respawn          = difficulty?.MissingCrewsRespawn       ?? true;
+        bool   enableCommNet    = difficulty?.EnableCommNet         ?? true;
+        double reentryHeat      = difficulty?.ReentryHeatScale     ?? 1.0;
+        bool   respawn          = difficulty?.MissingCrewsRespawn  ?? true;
 
         return "{\"commNetRangeModifier\":"         + commNetRange.ToString("R")
              + ",\"dsnModifier\":"                  + dsnModifier.ToString("R")
-             + ",\"requireSignalForControl\":"      + (reqSignalCtrl ? "true" : "false")
-             + ",\"requireSignalForScience\":"      + (reqSignalSci  ? "true" : "false")
+             + ",\"requireSignalForControl\":"      + (reqSignalCtrl  ? "true" : "false")
              + ",\"enableCommNet\":"                + (enableCommNet  ? "true" : "false")
              + ",\"occludeBodies\":"                + (occludeBodies  ? "true" : "false")
-             + ",\"rangeModifier\":"                + commNetRange.ToString("R")
+             + ",\"plasmaBlackout\":"               + (plasmaBlackout ? "true" : "false")
              + ",\"scienceRewardsMultiplier\":"     + sciReward.ToString("R")
              + ",\"fundsRewardsMultiplier\":"       + fundsReward.ToString("R")
              + ",\"reputationRewardsMultiplier\":"  + repReward.ToString("R")
              + ",\"fundsPenaltiesMultiplier\":"     + fundsPenalty.ToString("R")
              + ",\"reputationPenaltiesMultiplier\":" + repPenalty.ToString("R")
              + ",\"reentryHeatingMultiplier\":"     + reentryHeat.ToString("R")
-             + ",\"crashToleranceMultiplier\":"     + crashTolerance.ToString("R")
-             + ",\"plasmaBlackout\":"               + (plasmaBlackout ? "true" : "false")
-             + ",\"kerbalGToleranceMultiplier\":"   + kerbalGTol.ToString("R")
              + ",\"missingCrewsRespawn\":"          + (respawn ? "true" : "false") + "}";
     }
 }

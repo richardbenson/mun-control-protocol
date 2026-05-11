@@ -61,9 +61,9 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 - **Notes**: kRPC 0.5.4 C# client does NOT expose `SpaceCenter.AstronautComplex` or `CrewMember.ExperienceLevel`/`ExperienceTrait`/`Vessel` — contrary to the prompt's guidance. `get_kerbals` was implemented as a Career-side kRPC procedure (`KerbalsService`) using `HighLogic.CurrentGame.CrewRoster` and `flightState.protoVessels`, like the other Career services. `CommNet.CommNetParams` field names: `rangeModifier`, `DSNModifier`, `requireSignalForControl`, `requireSignalForScience`, `enableCommNet`, `occlusion_multiplier_vac`, `plasmaBlackout` — verify against Assembly-CSharp before deploying. `GameParameters.CareerParams` field names: `SciGainMultiplier`, `FundsGainMultiplier`, `FundsLossMultiplier`, `RepGainMultiplier`, `RepLossMultiplier`. `GameParameters.DifficultyParams` field names: `ReentryHeatScale`, `CrashTolerance`, `KerbalGToleranceMultiplier`, `MissingCrewsRespawn`. Stubs manually extended (not re-generated from DLL) — regenerate after Career DLL deploy. `get_vessels` and `get_body_info` remain kRPC SpaceCenter passthroughs (no Career-side work needed). `dotnet test` passes: 47 tests (11 Shared + 36 MCP).
 
 ## Phase 8 — README + INSTALL + release packaging
-- **Status**: not-started
+- **Status**: complete
 - **Branch**: `feature/ksp-mission-control-phase-08`
 - **Dependencies**: Phase 7 (all features complete)
-- **Started**:
-- **Completed**:
-- **Notes**:
+- **Started**: 2026-05-11
+- **Completed**: 2026-05-11
+- **Notes**: Phase 7 compile errors corrected before packaging: `CommNetParams` does not have `requireSignalForScience` or `enableCommNet` — those fields don't exist in KSP 1.12; `EnableCommNet` lives in `GameParameters.DifficultyParams`. `occlusion_multiplier_vac` → `occlusionMultiplierVac`. `SciGainMultiplier` → `ScienceGainMultiplier`. `CrashTolerance` and `KerbalGToleranceMultiplier` don't exist in `DifficultyParams` — removed. `KerbalRoster` indexer takes `int` not `KerbalType`; correct API is `roster.Crew` and `roster.Tourist` (IEnumerable). `DifficultySettings` DTO and its unit test updated to match. Zip `KSPMissionControl-v0.1.0.zip` produced and verified. All 47 tests pass (11 Shared + 36 MCP). Definition-of-done check: build ✓ / tests ✓ / packaging ✓ / README ✓ / INSTALL ✓ / repo state: PRs pending (see Phase 8 task). Cross-platform MCP build deferred to v0.2 (Windows-only in v0.1; noted in README Future section).
