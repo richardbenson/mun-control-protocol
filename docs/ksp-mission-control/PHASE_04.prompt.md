@@ -44,7 +44,7 @@ Extend `KSPMissionControlAddon.cs` to:
 - Refresh the parts cache from the same tick that refreshes the tech tree (they're correlated).
 
 ### 4. Regenerate stubs
-With the new service deployed and KSP running, re-run `krpc-clientgen` per Phase 3's recorded command. Replace `KSPMissionControlStubs.cs`.
+Deploy the Career DLL, then re-run `krpc-clientgen` offline per Phase 3's recorded command (KSP does not need to be running). Replace `KSPMissionControlStubs.cs`.
 
 ### 5. MCP tool layer
 Create `src/KSPMissionControl.MCP/Tools/PartsTools.cs` with two MCP tools:

@@ -91,7 +91,7 @@ The project is complete when **all** of the following are true:
 
 ## Risks
 
-- **Stub-regen friction**: every change to the Career service surface costs a KSP relaunch + `krpc-clientgen` run. Phase prompts are designed to ship each service's full surface in one go.
+- **Stub-regen friction**: every change to the Career service surface requires a `krpc-clientgen` run. KSP does not need to be running — the tool reads the deployed DLL directly (see Phase 3 PROGRESS notes for the exact command). Phase prompts are designed to ship each service's full surface in one go.
 - **Threading**: KSP API access is Unity-main-thread-only. The cache pattern established in Phase 3 must be followed by every subsequent Career service.
 - **Parts payload size**: `get_part_stats` and `get_science_status` can return large blobs. Tool-layer parameter validation enforces filters; worth load-testing once Phase 5 lands.
 - **Per-machine paths**: KSP/Unity DLL refs are absolute paths. `Directory.Build.props` (Phase 1) keeps these in one ignored file per checkout.
