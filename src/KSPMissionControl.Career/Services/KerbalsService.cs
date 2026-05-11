@@ -51,13 +51,13 @@ public static class KerbalsService
         var sb = new StringBuilder("[");
         bool first = true;
 
-        foreach (ProtoCrewMember pcm in roster[ProtoCrewMember.KerbalType.Crew])
+        foreach (ProtoCrewMember pcm in roster.Crew)
         {
             if (pcm == null) continue;
             AppendKerbal(sb, ref first, pcm, kerbalToVessel);
         }
 
-        foreach (ProtoCrewMember pcm in roster[ProtoCrewMember.KerbalType.Tourist])
+        foreach (ProtoCrewMember pcm in roster.Tourist)
         {
             if (pcm == null) continue;
             AppendKerbal(sb, ref first, pcm, kerbalToVessel);
