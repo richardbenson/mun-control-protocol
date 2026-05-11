@@ -19,8 +19,12 @@
       <HintPath>$(KspInstallDir)\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="KRPC">
-      <HintPath>$(KspInstallDir)\GameData\kRPC\KRPC.dll</HintPath>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(KspInstallDir)\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="KRPC.Core">
+      <HintPath>$(KspInstallDir)\GameData\kRPC\KRPC.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="KRPC.SpaceCenter">

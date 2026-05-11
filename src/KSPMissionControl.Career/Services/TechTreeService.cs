@@ -1,3 +1,4 @@
+using KRPC.Service;
 using KRPC.Service.Attributes;
 using KSPMissionControl.Career.Internal;
 using System;
@@ -19,10 +20,11 @@ public static class TechTreeService
 
     internal static void RefreshCache()
     {
-        if (ResearchAndDevelopment.Instance == null) return;
+        var rd = ResearchAndDevelopment.Instance;
+        if (rd == null) return;
         try
         {
-            Cache.Update(BuildJson());
+            Cache.Update(BuildJson(rd));
         }
         catch (Exception ex)
         {
@@ -30,7 +32,7 @@ public static class TechTreeService
         }
     }
 
-    private static string BuildJson()
+    private static string BuildJson(ResearchAndDevelopment rd)
     {
         // Group loaded parts by the tech node that unlocks them.
         var partsByTech = new Dictionary<string, List<string>>(StringComparer.Ordinal);
@@ -43,7 +45,7 @@ public static class TechTreeService
             list.Add(part.name);
         }
 
-        // Tech node definitions (id, title, cost) come from the game database config.
+        // Tech node definitions (id, cost) come from the game database config.
         var configs = GameDatabase.Instance.GetConfigNodes("TechTree");
         if (configs == null || configs.Length == 0) return "[]";
 
@@ -54,10 +56,27 @@ public static class TechTreeService
             var techId = rdNode.GetValue("id");
             if (string.IsNullOrEmpty(techId)) continue;
 
-            var title = rdNode.GetValue("title") ?? techId;
+            // Prefer the static KSP helper for title; fall back to config value.
+            var title = ResearchAndDevelopment.GetTechnologyTitle(techId);
+            if (string.IsNullOrEmpty(title))
+                title = rdNode.GetValue("title") ?? techId;
+
             int.TryParse(rdNode.GetValue("cost"), out int scienceCost);
 
-            var state = ResearchAndDevelopment.GetTechnologyState(techId);
+            // Determine status. GetTechState() returns a non-null ProtoTechNode only when unlocked.
+            string status;
+            var proto = rd.GetTechState(techId);
+            if (proto != null)
+            {
+                status = "Unlocked";
+                scienceCost = proto.scienceCost;
+            }
+            else
+            {
+                var state = ResearchAndDevelopment.GetTechnologyState(techId);
+                status = state == RDTech.State.Available ? "Available" : "Locked";
+            }
+
             var parts = partsByTech.TryGetValue(techId, out var pList) ? pList : new List<string>();
 
             if (!first) sb.Append(',');
@@ -66,7 +85,7 @@ public static class TechTreeService
             sb.Append("{\"id\":").Append(JsonString(techId))
               .Append(",\"title\":").Append(JsonString(title))
               .Append(",\"scienceCost\":").Append(scienceCost)
-              .Append(",\"status\":").Append(JsonString(StatusName(state)))
+              .Append(",\"status\":").Append(JsonString(status))
               .Append(",\"partNames\":[");
 
             for (int i = 0; i < parts.Count; i++)
@@ -79,13 +98,6 @@ public static class TechTreeService
         sb.Append(']');
         return sb.ToString();
     }
-
-    private static string StatusName(RDTech.State state) => state switch
-    {
-        RDTech.State.Available  => "Available",
-        RDTech.State.Researched => "Unlocked",
-        _                       => "Locked",
-    };
 
     private static string JsonString(string s) =>
         "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"")
