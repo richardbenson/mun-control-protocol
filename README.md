@@ -8,7 +8,9 @@ Supports **KSP 1.12.x**. KSP2 is not supported.
 
 ---
 
-## The 10 tools
+## The 17 tools
+
+### Live career data (requires KSP running)
 
 | Tool | What it returns |
 |---|---|
@@ -20,8 +22,22 @@ Supports **KSP 1.12.x**. KSP2 is not supported.
 | `get_vessels` | Active flights with orbital data and crew manifest |
 | `get_building_levels` | KSC facility upgrade levels (VAB, Runway, Tracking Station, …) |
 | `get_kerbals` | Full Kerbal roster — name, type, experience, assignment status |
-| `get_body_info` | Celestial body data (radius, gravity, atmosphere, SOI) |
+| `get_body_info` | Celestial body data: mass, radius, atmosphere height, SOI, parent body, orbital period, sidereal rotation period |
 | `get_difficulty_settings` | Career modifiers: reward multipliers, CommNet config, reentry heat, respawn |
+
+### Formula tools (no KSP connection needed)
+
+These tools run pure maths — useful for planning missions before launch.
+
+| Tool | What it calculates |
+|---|---|
+| `calculate_delta_v` | Tsiolkovsky rocket equation: ΔV = Isp × g₀ × ln(m_wet / m_dry) |
+| `calculate_orbital_velocity` | Circular orbital speed at a given altitude around a body |
+| `calculate_orbital_period` | Orbital period of a circular orbit at a given altitude |
+| `calculate_hohmann_transfer` | Both burn ΔVs, total ΔV, and coast time for a Hohmann transfer between two circular orbits |
+| `calculate_escape_velocity` | Escape velocity at a given altitude (defaults to surface) |
+| `calculate_synchronous_orbit` | Altitude and velocity of a stationary orbit; returns null altitude if the orbit is below the surface |
+| `calculate_commnet_range` | Maximum CommNet link range between two antennas using KSP's geometric-mean formula |
 
 ---
 
@@ -38,6 +54,8 @@ See [INSTALL.md](INSTALL.md).
 - *"What science experiments haven't I done at Kerbin yet?"*
 - *"Design a comms constellation for Duna coverage."*
 - *"What's the best lander I can build with my current tech and funds?"*
+- *"How much ΔV do I need to transfer from LKO to a 200 km orbit?"*
+- *"What's the synchronous orbit altitude for Duna, and will my antenna reach it?"*
 
 ---
 

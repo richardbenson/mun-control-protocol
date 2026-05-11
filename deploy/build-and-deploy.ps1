@@ -84,5 +84,21 @@ Write-Host "Building KSPMissionControl.MCP..."
 dotnet build $mcpProject --nologo -v minimal
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+# 4. Smoke-test: verify all expected MCP tools are registered
+$mcpExe    = Join-Path $PSScriptRoot "..\src\KSPMissionControl.MCP\bin\Debug\net8.0\KSPMissionControl.MCP.exe"
+$testScript = Join-Path $PSScriptRoot "test-mcp-tools.py"
+Write-Host ""
+
+if (Get-Command python -ErrorAction SilentlyContinue) {
+    Write-Host "Smoke-testing MCP tool registration..."
+    python $testScript $mcpExe
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "MCP tool-registration check failed - see output above."
+        exit $LASTEXITCODE
+    }
+} else {
+    Write-Host "  [tool registration check skipped -- python not found]"
+}
+
 Write-Host ""
 Write-Host "Done. Restart KSP to load the updated Career addon."

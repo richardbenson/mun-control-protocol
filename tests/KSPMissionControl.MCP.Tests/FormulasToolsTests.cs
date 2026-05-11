@@ -75,9 +75,9 @@ public sealed class FormulasToolsTests
     [Fact]
     public async Task OrbitalPeriod_KerbinLKO_ReasonableValue()
     {
-        // LKO ~80 km — expect roughly 2000–2200 s
+        // LKO ~80 km — actual ≈ 1875 s
         var result = await _tools.CalculateOrbitalPeriodAsync(KerbinMass, KerbinRadius, 80_000);
-        Assert.InRange(result.PeriodS, 1900, 2300);
+        Assert.InRange(result.PeriodS, 1800, 2000);
     }
 
     [Fact]

@@ -134,7 +134,7 @@ internal sealed class KrpcConnection : IKrpcConnection
                 Parent           = parentName,
                 OrbitalPeriod    = orbPeriod,
                 SemiMajorAxis    = sma,
-                RotationPeriodS  = cb.RotationPeriod,
+                RotationPeriodS  = cb.RotationalPeriod,
             });
         }
         return JsonSerializer.Serialize(dtos, _serializeOptions);
