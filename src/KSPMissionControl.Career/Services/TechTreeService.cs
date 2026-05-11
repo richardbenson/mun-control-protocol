@@ -34,6 +34,18 @@ public static class TechTreeService
     [KRPCProcedure]
     public static string GetSciencePerBodySummary() => ScienceService.GetSciencePerBodySummary();
 
+    /// <summary>Returns the upgrade level of each KSC facility as a JSON object (0-indexed; 0 = unupgraded).</summary>
+    [KRPCProcedure]
+    public static string GetBuildingLevels() => BuildingsService.GetBuildingLevels();
+
+    /// <summary>Returns all career difficulty modifiers including CommNet, science/funds rewards, reentry heating, and crash tolerance as a JSON object.</summary>
+    [KRPCProcedure]
+    public static string GetDifficultySettings() => DifficultyService.GetDifficultySettings();
+
+    /// <summary>Returns the full Kerbal roster as a JSON array. Each element has name, experienceLevel, specialty, location (Available/Assigned/KIA/Missing), and assignedVessel (null if not on a mission).</summary>
+    [KRPCProcedure]
+    public static string GetKerbals() => KerbalsService.GetKerbals();
+
     internal static void RefreshCache()
     {
         var rd = ResearchAndDevelopment.Instance;

@@ -53,12 +53,12 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 - **Notes**: `ResearchAndDevelopment.GetExperimentSubjects()` does not exist in KSP's Assembly-CSharp — the subjects dictionary is internal. Fix: scan all instance fields of `ResearchAndDevelopment` for `Dictionary<string, ScienceSubject>` by type (field name varies across KSP patches). ID parsing: `<expId>@<body><situation><biome>` — body matched via `FlightGlobals.Bodies` (longest-first to avoid prefix shadowing); situations from a static closed set ordered longest-first (`InSpaceHigh`, `InSpaceLow`, `FlyingHigh`, `FlyingLow`, `Splashed`, `Landed`). Example edge: `crewReport@KerbinFlyingHighlands` → expId=`crewReport`, body=`Kerbin`, situation=`FlyingHigh`, biome=`lands` (note: biome remainder after consuming situation prefix; "Highlands" becomes "lands" after "FlyingHigh" is consumed — this is the expected raw form from KSP subject IDs and does not affect filtering since filters are applied to the stored body/situation fields). Two caches: subjects JSON (full, filtered on request) and per-body summary JSON. Science refresh cadence: 5 seconds (heavier than tech tree). Smoke test pending — requires KSP with career save loaded.
 
 ## Phase 7 — Buildings, difficulty, built-in passthroughs
-- **Status**: not-started
+- **Status**: complete
 - **Branch**: `feature/ksp-mission-control-phase-07`
 - **Dependencies**: Phase 3 (Career foundation pattern), Phase 2 (MCP tool registration pattern)
-- **Started**:
-- **Completed**:
-- **Notes**:
+- **Started**: 2026-05-11
+- **Completed**: 2026-05-11
+- **Notes**: kRPC 0.5.4 C# client does NOT expose `SpaceCenter.AstronautComplex` or `CrewMember.ExperienceLevel`/`ExperienceTrait`/`Vessel` — contrary to the prompt's guidance. `get_kerbals` was implemented as a Career-side kRPC procedure (`KerbalsService`) using `HighLogic.CurrentGame.CrewRoster` and `flightState.protoVessels`, like the other Career services. `CommNet.CommNetParams` field names: `rangeModifier`, `DSNModifier`, `requireSignalForControl`, `requireSignalForScience`, `enableCommNet`, `occlusion_multiplier_vac`, `plasmaBlackout` — verify against Assembly-CSharp before deploying. `GameParameters.CareerParams` field names: `SciGainMultiplier`, `FundsGainMultiplier`, `FundsLossMultiplier`, `RepGainMultiplier`, `RepLossMultiplier`. `GameParameters.DifficultyParams` field names: `ReentryHeatScale`, `CrashTolerance`, `KerbalGToleranceMultiplier`, `MissingCrewsRespawn`. Stubs manually extended (not re-generated from DLL) — regenerate after Career DLL deploy. `get_vessels` and `get_body_info` remain kRPC SpaceCenter passthroughs (no Career-side work needed). `dotnet test` passes: 47 tests (11 Shared + 36 MCP).
 
 ## Phase 8 — README + INSTALL + release packaging
 - **Status**: not-started

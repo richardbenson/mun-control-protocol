@@ -10,8 +10,9 @@ namespace KSPMissionControl.Career;
 [KSPAddon(KSPAddon.Startup.Instantly, once: true)]
 public sealed class KSPMissionControlAddon : MonoBehaviour
 {
-    private float _lastTechTreeRefresh = -999f;
-    private float _lastScienceRefresh = -999f;
+    private float _lastTechTreeRefresh  = -999f;
+    private float _lastScienceRefresh   = -999f;
+    private float _lastBuildingsRefresh = -999f;
 
     private void Awake()
     {
@@ -41,6 +42,15 @@ public sealed class KSPMissionControlAddon : MonoBehaviour
         {
             _lastScienceRefresh = Time.realtimeSinceStartup;
             ScienceService.RefreshCache();
+        }
+
+        // Buildings and difficulty change only when the player upgrades or edits settings; 5 s is plenty.
+        if (Time.realtimeSinceStartup - _lastBuildingsRefresh >= 5f)
+        {
+            _lastBuildingsRefresh = Time.realtimeSinceStartup;
+            BuildingsService.RefreshCache();
+            DifficultyService.RefreshCache();
+            KerbalsService.RefreshCache();
         }
     }
 

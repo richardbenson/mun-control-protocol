@@ -83,5 +83,26 @@ namespace KRPC.Client.Services.KSPMissionControl
             ByteString _data = connection.Invoke ("KSPMissionControl", "GetSciencePerBodySummary");
             return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
         }
+
+        [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetBuildingLevels")]
+        public string GetBuildingLevels ()
+        {
+            ByteString _data = connection.Invoke ("KSPMissionControl", "GetBuildingLevels");
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
+
+        [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetDifficultySettings")]
+        public string GetDifficultySettings ()
+        {
+            ByteString _data = connection.Invoke ("KSPMissionControl", "GetDifficultySettings");
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
+
+        [global::KRPC.Client.Attributes.RPCAttribute ("KSPMissionControl", "GetKerbals")]
+        public string GetKerbals ()
+        {
+            ByteString _data = connection.Invoke ("KSPMissionControl", "GetKerbals");
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
     }
 }
