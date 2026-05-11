@@ -1,3 +1,5 @@
+using KSPMissionControl.Shared.Models.PartModules;
+
 namespace KSPMissionControl.Shared.Models;
 
 public sealed class PartInfo
@@ -13,4 +15,10 @@ public sealed class PartInfo
     // the part still requires a funds purchase (only relevant when part purchasing is enabled
     // in difficulty settings — PartModelPurchased returns true when purchasing is disabled).
     public bool IsPurchased { get; set; }
+
+    public EngineInfo? Engine { get; set; }
+    public AntennaInfo? Antenna { get; set; }
+    public TankInfo? Tank { get; set; }
+    public CommandInfo? Command { get; set; }
+    public SolarPanelInfo? SolarPanel { get; set; }
 }

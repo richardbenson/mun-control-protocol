@@ -37,12 +37,12 @@ Live status of the KSP Mission Control implementation. Each phase entry is updat
 - **Notes**: kRPC does not support two static classes with the same `[KRPCService(Name = "KSPMissionControl")]` — the scanner rejects duplicate service ids. Fix: `PartsService.cs` is a caching helper only (no `[KRPCService]` attribute); the two new `[KRPCProcedure]` methods (`GetPartsByCategory`, `GetPartByName`) live in `TechTreeService.cs`, the single `[KRPCService]` class, delegating to `PartsService`. Wet-mass calculation: `PartResource.amount × PartResourceDefinition.density` (tonnes/unit) — some parts define resources but launch full (e.g. monoprop pods), so wet > dry as expected; parts with no resources have massWet == massDry. Parts with `TechRequired = ""` (null/empty) are excluded — they have no tech node. "start" parts are always included (they are always `RDTech.State.Available`). Stubs regenerated from deployed DLL via krpctools 0.5.4 (KSP not running). Smoke test pending — requires loading career save.
 
 ## Phase 5 — Module-specific part stats
-- **Status**: not-started
+- **Status**: complete
 - **Branch**: `feature/ksp-mission-control-phase-05`
 - **Dependencies**: Phase 4
-- **Started**:
-- **Completed**:
-- **Notes**:
+- **Started**: 2026-05-11
+- **Completed**: 2026-05-11
+- **Notes**: Shared project needed `<LangVersion>latest</LangVersion>` and `<Nullable>enable</Nullable>` to compile `PartInfo`'s nullable sub-DTO properties against the `net472` target — added to csproj. Stubs not regenerated: no new kRPC procedures added; `GetPartsByCategory` and `GetPartByName` return richer JSON but the kRPC interface is unchanged. `ModuleDataTransmitter.antennaType` is an `AntennaType` enum (values `INTERNAL`/`DIRECT`/`RELAY`) — serialised to title-case via a `ToTitleCase` helper. `HibernationCharge` is always 0: the EC consumption rate lives in `ModuleCommand.resHandler.inputResources` which requires non-trivial KSP reflection and was deferred as out-of-scope for v1. `ModuleSAS.SASServiceLevel` (int 0–3) confirmed correct field name in KSP 1.12. `FindObjectEnd` in `PartsService` correctly handles nested sub-DTO objects since it tracks `{`/`}` depth. Smoke tests pending — require KSP with career save loaded.
 
 ## Phase 6 — Science
 - **Status**: not-started
