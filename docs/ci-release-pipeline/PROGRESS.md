@@ -2,12 +2,12 @@
 
 ## Phase 01 — KSP Assembly Stubs
 
-- **Status:** in-progress
+- **Status:** complete
 - **Branch:** `feature/ci-release-pipeline-phase-1`
 - **PR target:** `feature/ci-release-pipeline`
 - **Dependencies:** none
 - **Started:** 2026-05-12
-- **Completed:** —
+- **Completed:** 2026-05-12
 - **Notes:** —
 
 ## Phase 02 — CI Build & Test Workflow
