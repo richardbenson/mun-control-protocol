@@ -36,9 +36,22 @@ Launch KSP and load any save. You should see a small kRPC server window in the b
 
 ---
 
+## CKAN Installation (recommended for the KSP mod)
+
+The KSP mod component (Career DLL) is available via CKAN. Search for **KSP Mission Control**
+in the CKAN client and click Install. CKAN will automatically install kRPC as a dependency,
+so you can skip Step 1 below if you use this method.
+
+**Important:** CKAN installs only the KSP mod. You must install the MCP server separately —
+follow the [Step 3 — Place the MCP server](#step-3--place-the-mcp-server) section below.
+
+---
+
 ## Step 2 — Install the Career extension DLL
 
-1. Download the latest **KSPMissionControl-vX.Y.Z.zip** from the [GitHub releases page](https://github.com/YOUR_USERNAME/KSPMissionControl/releases) (replace with your repo URL once published).
+> **Skip this step if you installed via CKAN above.**
+
+1. Download the latest **KSPMissionControl-vX.Y.Z.zip** from the [GitHub releases page](https://github.com/richardbenson/ksp-mission-control/releases).
 2. Extract the zip.
 3. Inside the extracted folder, find `GameData/KSPMissionControl/`. Copy the entire `KSPMissionControl/` folder into your KSP `GameData/` folder.
 

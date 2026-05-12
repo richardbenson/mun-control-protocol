@@ -32,10 +32,10 @@
 
 ## Phase 04 — CKAN Metadata & Submission Guide
 
-- **Status:** not-started
+- **Status:** complete
 - **Branch:** `feature/ci-release-pipeline-phase-4`
 - **PR target:** `feature/ci-release-pipeline`
 - **Dependencies:** Phase 03
-- **Started:** —
-- **Completed:** —
+- **Started:** 2026-05-12
+- **Completed:** 2026-05-12
 - **Notes:** —

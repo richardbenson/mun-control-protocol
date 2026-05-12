@@ -1,0 +1,27 @@
+{
+  "spec_version": "v1.4",
+  "identifier": "KSPMissionControl",
+  "name": "KSP Mission Control",
+  "abstract": "kRPC-based MCP server bridge for AI-assisted KSP career management. Exposes career data (tech tree, science, kerbals, buildings, difficulty) over the Model Context Protocol.",
+  "author": [ "RichardBenson" ],
+  "license": "MIT",
+  "resources": {
+    "homepage": "https://github.com/richardbenson/ksp-mission-control",
+    "repository": "https://github.com/richardbenson/ksp-mission-control",
+    "bugtracker": "https://github.com/richardbenson/ksp-mission-control/issues"
+  },
+  "$kref": "#/ckan/github/richardbenson/ksp-mission-control",
+  "$vref": "#/ckan/ksp-avc",
+  "depends": [
+    { "name": "kRPC" }
+  ],
+  "install": [
+    {
+      "find": "GameData",
+      "install_to": "GameData"
+    }
+  ],
+  "ksp_version_min": "1.12.0",
+  "ksp_version_max": "1.12.9",
+  "tags": [ "career", "information" ]
+}
