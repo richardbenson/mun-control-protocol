@@ -17,3 +17,7 @@ deploy/GameData/KSPMissionControl/*.dll
 # Release packaging output
 publish/
 KSPMissionControl-v*.zip
+
+# Stub build output (source files are committed; binaries are not)
+lib/stubs/**/bin/
+lib/stubs/**/obj/
