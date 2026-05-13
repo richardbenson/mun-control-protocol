@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using MunControlProtocol.Shared.Models.PartModules;
 
 namespace MunControlProtocol.Shared.Models;
@@ -17,14 +16,9 @@ public sealed class PartInfo
     // in difficulty settings — PartModelPurchased returns true when purchasing is disabled).
     public bool IsPurchased { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public EngineInfo? Engine { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public AntennaInfo? Antenna { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public TankInfo? Tank { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public CommandInfo? Command { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public SolarPanelInfo? SolarPanel { get; set; }
 }
