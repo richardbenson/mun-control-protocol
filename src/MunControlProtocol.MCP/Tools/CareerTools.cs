@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using MunControlProtocol.MCP.Krpc;
 using MunControlProtocol.Shared.Models;
@@ -25,14 +25,32 @@ internal sealed class CareerTools(IKrpcConnection connection)
             Reputation = connection.Reputation
         });
 
-    /// <summary>Returns all tech tree nodes with their unlock status and the parts contained in each node.</summary>
+    /// <summary>
+    /// Returns tech tree nodes. By default returns all nodes without their part lists (Id, Title, ScienceCost, Status only).
+    /// Use status to filter: Locked, Available, or Unlocked.
+    /// Use include_parts=true to include PartNames on each node.
+    /// </summary>
     [McpServerTool(Name = "get_tech_tree")]
-    public Task<IReadOnlyList<TechNode>> GetTechTreeAsync()
+    public Task<IReadOnlyList<TechNode>> GetTechTreeAsync(TechNodeStatus? status = null, bool include_parts = false)
     {
         var json = connection.GetTechTree();
         var nodes = JsonSerializer.Deserialize<List<TechNode>>(json, JsonOptions)
             ?? new List<TechNode>();
-        return Task.FromResult<IReadOnlyList<TechNode>>(nodes);
+
+        IEnumerable<TechNode> filtered = status.HasValue
+            ? nodes.Where(n => n.Status == status.Value)
+            : nodes;
+
+        var result = filtered.Select(n => new TechNode
+        {
+            Id = n.Id,
+            Title = n.Title,
+            ScienceCost = n.ScienceCost,
+            Status = n.Status,
+            PartNames = include_parts ? n.PartNames : null,
+        }).ToList();
+
+        return Task.FromResult<IReadOnlyList<TechNode>>(result);
     }
 
     /// <summary>Returns the upgrade level of each KSC facility (0-indexed; 0 = unupgraded, max varies per building).</summary>

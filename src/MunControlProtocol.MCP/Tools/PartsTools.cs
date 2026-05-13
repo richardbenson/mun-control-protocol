@@ -1,4 +1,4 @@
-﻿using MunControlProtocol.MCP.Krpc;
+using MunControlProtocol.MCP.Krpc;
 using MunControlProtocol.Shared.Models;
 using ModelContextProtocol.Server;
 using System.Text.Json;
@@ -15,7 +15,7 @@ internal sealed class PartsTools(IKrpcConnection connection)
         Converters = { new JsonStringEnumConverter() },
     };
 
-    /// <summary>Returns parts whose tech node is unlocked, filtered to the given category (engine, fueltank, command, science, communication, structural, ...). Each part includes isPurchased — false means the node is unlocked but the part still needs a funds purchase before it can be used in builds.</summary>
+    /// <summary>Lists unlocked parts in the given category (engine, fueltank, command, science, communication, structural, ...) with basic stats: name, title, mass, cost, techRequired, isPurchased. Module details (thrust, Isp, etc.) are excluded — use get_part_stats for those. isPurchased=false means the tech node is unlocked but a funds purchase is still needed.</summary>
     [McpServerTool(Name = "get_parts_by_category")]
     public Task<IReadOnlyList<PartInfo>> GetPartsByCategoryAsync(string category)
     {
@@ -24,10 +24,18 @@ internal sealed class PartsTools(IKrpcConnection connection)
         var json = connection.GetPartsByCategory(category);
         var parts = JsonSerializer.Deserialize<List<PartInfo>>(json, PartsOptions)
             ?? new List<PartInfo>();
+        foreach (var p in parts)
+        {
+            p.Engine = null;
+            p.Antenna = null;
+            p.Tank = null;
+            p.Command = null;
+            p.SolarPanel = null;
+        }
         return Task.FromResult<IReadOnlyList<PartInfo>>(parts);
     }
 
-    /// <summary>Returns part stats. Provide either part_name for a single part, or category for all parts in that category. At least one is required. Each part includes isPurchased — false means the tech node is unlocked but a funds purchase is still needed.</summary>
+    /// <summary>Returns full part stats including module details (engine thrust/Isp, antenna range, tank resources, etc.). Provide part_name for a single part or category for all parts in that category. At least one is required. isPurchased=false means the tech node is unlocked but a funds purchase is still needed.</summary>
     [McpServerTool(Name = "get_part_stats")]
     public Task<IReadOnlyList<PartInfo>> GetPartStatsAsync(string? part_name = null, string? category = null)
     {

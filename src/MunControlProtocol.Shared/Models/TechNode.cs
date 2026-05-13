@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace MunControlProtocol.Shared.Models;
 
@@ -8,7 +9,8 @@ public sealed class TechNode
     public string Title { get; set; } = "";
     public int ScienceCost { get; set; }
     public TechNodeStatus Status { get; set; }
-    public IReadOnlyList<string> PartNames { get; set; } = new List<string>();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyList<string>? PartNames { get; set; }
 }
 
 public enum TechNodeStatus
