@@ -61,8 +61,11 @@ jobs:
           dotnet build lib/stubs/KRPC.Core/KRPC.Core.csproj -c Release --no-restore
           dotnet build lib/stubs/KRPC.SpaceCenter/KRPC.SpaceCenter.csproj -c Release --no-restore
 
-      - name: Build and test
-        run: dotnet test KSPMissionControl.sln -c Release --no-restore --verbosity normal
+      - name: Build solution
+        run: dotnet build KSPMissionControl.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test KSPMissionControl.sln -c Release --no-build --verbosity normal
 
       - name: Publish MCP server (win-x64)
         run: >
@@ -113,13 +116,16 @@ jobs:
           cd ..
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: KSP Mission Control ${{ steps.version.outputs.tag }}
-          prerelease: ${{ steps.version.outputs.prerelease }}
-          files: KSPMissionControl-${{ steps.version.outputs.tag }}.zip
-          body: |
-            See [INSTALL.md](https://github.com/richardbenson/ksp-mission-control/blob/main/INSTALL.md) for installation instructions.
-
-            **MCP server:** requires [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) (x64).
-            **KSP mod:** install to `GameData/` via CKAN or manually.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        shell: bash
+        run: |
+          FLAGS=()
+          [[ "$PRERELEASE" == "true" ]] && FLAGS+=(--prerelease)
+          gh release create "$TAG" \
+            --title "KSP Mission Control $TAG" \
+            --notes $'See [INSTALL.md](https://github.com/richardbenson/ksp-mission-control/blob/main/INSTALL.md) for installation instructions.\n\n**MCP server:** requires [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) (x64).\n**KSP mod:** install to `GameData/` via CKAN or manually.' \
+            "${FLAGS[@]}" \
+            "KSPMissionControl-${TAG}.zip"
