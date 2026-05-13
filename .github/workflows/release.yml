@@ -1,4 +1,4 @@
-name: Release
+﻿name: Release
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
           fi
 
       - name: Restore
-        run: dotnet restore KSPMissionControl.sln
+        run: dotnet restore MunControlProtocol.sln
 
       - name: Build stubs
         run: |
@@ -62,14 +62,14 @@ jobs:
           dotnet build lib/stubs/KRPC.SpaceCenter/KRPC.SpaceCenter.csproj -c Release --no-restore
 
       - name: Build solution
-        run: dotnet build KSPMissionControl.sln -c Release --no-restore
+        run: dotnet build MunControlProtocol.sln -c Release --no-restore
 
       - name: Test
-        run: dotnet test KSPMissionControl.sln -c Release --no-build --verbosity normal
+        run: dotnet test MunControlProtocol.sln -c Release --no-build --verbosity normal
 
       - name: Publish MCP server (win-x64, self-contained single file)
         run: >
-          dotnet publish src/KSPMissionControl.MCP/KSPMissionControl.MCP.csproj
+          dotnet publish src/MunControlProtocol.MCP/MunControlProtocol.MCP.csproj
           -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
           -p:DebugType=none -p:DebugSymbols=false
           -o publish/mcp --no-restore --nologo
@@ -77,11 +77,11 @@ jobs:
       - name: Stage GameData
         shell: bash
         run: |
-          mkdir -p publish/GameData/KSPMissionControl
-          cp src/KSPMissionControl.Career/bin/Release/net472/KSPMissionControl.Career.dll \
-             publish/GameData/KSPMissionControl/
-          cp src/KSPMissionControl.Shared/bin/Release/net472/KSPMissionControl.Shared.dll \
-             publish/GameData/KSPMissionControl/
+          mkdir -p publish/GameData/MunControlProtocol
+          cp src/MunControlProtocol.Career/bin/Release/net472/MunControlProtocol.Career.dll \
+             publish/GameData/MunControlProtocol/
+          cp src/MunControlProtocol.Shared/bin/Release/net472/MunControlProtocol.Shared.dll \
+             publish/GameData/MunControlProtocol/
 
       - name: Write AVC version file
         shell: bash
@@ -90,11 +90,11 @@ jobs:
           MINOR: ${{ steps.version.outputs.minor }}
           PATCH: ${{ steps.version.outputs.patch }}
         run: |
-          cat > publish/GameData/KSPMissionControl/KSPMissionControl.version << EOF
+          cat > publish/GameData/MunControlProtocol/MunControlProtocol.version << EOF
           {
-            "NAME": "KSP Mission Control",
-            "URL": "https://raw.githubusercontent.com/richardbenson/ksp-mission-control/main/GameData/KSPMissionControl/KSPMissionControl.version",
-            "DOWNLOAD": "https://github.com/richardbenson/ksp-mission-control/releases",
+            "NAME": "Mun Control Protocol",
+            "URL": "https://raw.githubusercontent.com/richardbenson/mun-control-protocol/main/GameData/MunControlProtocol/MunControlProtocol.version",
+            "DOWNLOAD": "https://github.com/richardbenson/mun-control-protocol/releases",
             "VERSION": { "MAJOR": $MAJOR, "MINOR": $MINOR, "PATCH": $PATCH, "BUILD": 0 },
             "KSP_VERSION_MIN": { "MAJOR": 1, "MINOR": 12, "PATCH": 0 },
             "KSP_VERSION_MAX": { "MAJOR": 1, "MINOR": 12, "PATCH": 9 }
@@ -113,7 +113,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           cd publish
-          7z a "../KSPMissionControl-v${VERSION}.zip" .
+          7z a "../MunControlProtocol-v${VERSION}.zip" .
           cd ..
 
       - name: Create GitHub Release
@@ -126,7 +126,7 @@ jobs:
           FLAGS=()
           [[ "$PRERELEASE" == "true" ]] && FLAGS+=(--prerelease)
           gh release create "$TAG" \
-            --title "KSP Mission Control $TAG" \
-            --notes $'See [INSTALL.md](https://github.com/richardbenson/ksp-mission-control/blob/main/INSTALL.md) for installation instructions.\n\n**MCP server:** self-contained exe — no .NET runtime required.\n**KSP mod:** install to `GameData/` via CKAN or manually.' \
+            --title "Mun Control Protocol $TAG" \
+            --notes $'See [INSTALL.md](https://github.com/richardbenson/mun-control-protocol/blob/main/INSTALL.md) for installation instructions.\n\n**MCP server:** self-contained exe — no .NET runtime required.\n**KSP mod:** install to `GameData/` via CKAN or manually.' \
             "${FLAGS[@]}" \
-            "KSPMissionControl-${TAG}.zip"
+            "MunControlProtocol-${TAG}.zip"

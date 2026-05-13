@@ -1,4 +1,4 @@
-# CI / Release Pipeline
+﻿# CI / Release Pipeline
 
 **Completed:** 2026-05-12
 
@@ -6,11 +6,11 @@
 
 ## Original Requirements
 
-Automate building, testing, and releasing KSP Mission Control via GitHub Actions, removing
+Automate building, testing, and releasing Mun Control Protocol via GitHub Actions, removing
 the requirement for a local KSP installation during packaging. The goal was to make every
 versioned release a single `git tag` command with no manual steps.
 
-The five external assemblies required by `KSPMissionControl.Career` (`Assembly-CSharp`,
+The five external assemblies required by `MunControlProtocol.Career` (`Assembly-CSharp`,
 `UnityEngine`, `UnityEngine.CoreModule`, `KRPC.Core`, `KRPC.SpaceCenter`) are normally
 sourced from a local KSP installation via `$(KspInstallDir)` HintPaths. CI has no KSP
 install, so the project could not build at all without a solution.
@@ -50,15 +50,15 @@ built explicitly before the solution build, since the stub DLLs must exist on di
 `.github/workflows/release.yml` triggers on `v*` tag pushes. It strips the leading `v`
 from the tag, builds and tests the full solution, publishes the MCP server (win-x64,
 framework-dependent), assembles a `publish/` staging tree, writes the AVC
-`KSPMissionControl.version` file with MAJOR/MINOR/PATCH split from the tag, zips to
-`KSPMissionControl-v$VERSION.zip`, and creates a GitHub Release via
+`MunControlProtocol.version` file with MAJOR/MINOR/PATCH split from the tag, zips to
+`MunControlProtocol-v$VERSION.zip`, and creates a GitHub Release via
 `softprops/action-gh-release@v2`. Pre-release tags (containing `-`) automatically produce
 a GitHub pre-release. `deploy/package-release.ps1` was updated with a `-NoKsp` switch for
 local testing without a KSP install.
 
 ### Phase 4 — CKAN Metadata & Submission Guide
 
-`ckan/ksp-mission-control.netkan` was added using `$kref: #/ckan/github/...` (version
+`ckan/mun-control-protocol.netkan` was added using `$kref: #/ckan/github/...` (version
 from GitHub Releases tag) and `$vref: #/ckan/ksp-avc` (KSP compatibility from the AVC
 file inside the ZIP). The `install` directive uses `find: GameData` which silently ignores
 the `mcp/` folder. A `depends: [kRPC]` entry ensures CKAN installs kRPC automatically.
@@ -72,7 +72,7 @@ the mod component, not the MCP server.
 
 - **`net472` builds require `windows-latest` in GitHub Actions.** The `.NET SDK` can cross-compile `net472` on Linux via reference assemblies, but the KSP stub projects produce output DLLs that must exist as real build artifacts — not just reference assemblies — before dependent projects can resolve them. Linux runners hit edge cases; `windows-latest` is the safe choice for KSP mod CI.
 
-- **Stub DLLs must be built in a separate step before the solution build.** `dotnet build KSPMissionControl.sln` does not guarantee build order across independent projects. Explicitly building each stub project first avoids sporadic "reference not found" failures on clean runs.
+- **Stub DLLs must be built in a separate step before the solution build.** `dotnet build MunControlProtocol.sln` does not guarantee build order across independent projects. Explicitly building each stub project first avoids sporadic "reference not found" failures on clean runs.
 
 - **The git tag is the only version source; split it in the workflow.** Extracting `MAJOR/MINOR/PATCH` with `cut -d. -fN` in bash keeps everything consistent and eliminates version-file drift. The AVC file written at release time reflects whatever tag was pushed.
 

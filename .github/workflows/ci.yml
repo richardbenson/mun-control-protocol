@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore
-        run: dotnet restore KSPMissionControl.sln
+        run: dotnet restore MunControlProtocol.sln
 
       - name: Build stubs
         run: |
@@ -41,7 +41,7 @@ jobs:
           dotnet build lib/stubs/KRPC.SpaceCenter/KRPC.SpaceCenter.csproj -c Release --no-restore
 
       - name: Build solution
-        run: dotnet build KSPMissionControl.sln -c Release --no-restore
+        run: dotnet build MunControlProtocol.sln -c Release --no-restore
 
       - name: Test
-        run: dotnet test KSPMissionControl.sln -c Release --no-build --verbosity normal
+        run: dotnet test MunControlProtocol.sln -c Release --no-build --verbosity normal

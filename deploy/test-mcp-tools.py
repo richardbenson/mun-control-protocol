@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-MCP tool-discovery smoke test for KSP Mission Control.
+MCP tool-discovery smoke test for Mun Control Protocol.
 
 Launches the MCP server exe, performs the JSON-RPC initialize handshake,
 calls tools/list, and verifies every expected tool is registered.
 
 Usage:
-    python test-mcp-tools.py <path-to-KSPMissionControl.MCP.exe>
+    python test-mcp-tools.py <path-to-MunControlProtocol.MCP.exe>
 
 Exit codes:
     0  all expected tools present
@@ -109,7 +109,7 @@ def discover_tools(exe_path: str) -> list[str] | None:
 
 def main() -> int:
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <path-to-KSPMissionControl.MCP.exe>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <path-to-MunControlProtocol.MCP.exe>", file=sys.stderr)
         return 1
 
     exe = sys.argv[1]

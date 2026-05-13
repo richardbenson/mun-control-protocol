@@ -1,4 +1,4 @@
-# CKAN Submission Guide — KSP Mission Control
+﻿# CKAN Submission Guide — Mun Control Protocol
 
 This guide covers everything from "I have a tagged GitHub Release" to "CKAN users can install
 the mod" — including the first-time NetKAN PR, how subsequent releases flow automatically,
@@ -11,9 +11,9 @@ local testing, and updating the metadata when needed.
 Before submitting to CKAN, confirm:
 
 - [ ] A tagged GitHub Release exists (e.g. `v1.0.0`) with the ZIP attached to it
-- [ ] The ZIP contains `GameData/KSPMissionControl/KSPMissionControl.version` with correct
+- [ ] The ZIP contains `GameData/MunControlProtocol/MunControlProtocol.version` with correct
       `VERSION` and `KSP_VERSION_MIN` / `KSP_VERSION_MAX` fields
-- [ ] `ckan/ksp-mission-control.netkan` is committed to this repo on the `main` branch
+- [ ] `ckan/mun-control-protocol.netkan` is committed to this repo on the `main` branch
 - [ ] The `license` field in the netkan file matches the LICENSE file at the repo root (`MIT`)
 
 ---
@@ -37,7 +37,7 @@ cd NetKAN
 ### 3. Copy the netkan file into the fork
 
 ```bash
-cp /path/to/ksp-mission-control/ckan/ksp-mission-control.netkan NetKAN/
+cp /path/to/mun-control-protocol/ckan/mun-control-protocol.netkan NetKAN/
 ```
 
 ### 4. Validate the file locally
@@ -46,14 +46,14 @@ cp /path/to/ksp-mission-control/ckan/ksp-mission-control.netkan NetKAN/
 
 ```bash
 pip install ckan
-netkan --validate NetKAN/ksp-mission-control.netkan
+netkan --validate NetKAN/mun-control-protocol.netkan
 ```
 
 **Option B — Docker:**
 
 ```bash
 docker run --rm -v "$(pwd):/work" ghcr.io/KSP-CKAN/ckan-validate \
-  /work/NetKAN/ksp-mission-control.netkan
+  /work/NetKAN/mun-control-protocol.netkan
 ```
 
 Fix any validation errors before continuing.
@@ -64,7 +64,7 @@ Inflation converts the `.netkan` into the `.ckan` file that the CKAN client inst
 Running it locally lets you check the generated metadata before going public.
 
 ```bash
-netkan --inflate NetKAN/ksp-mission-control.netkan
+netkan --inflate NetKAN/mun-control-protocol.netkan
 ```
 
 Review the output: confirm the version, download URL, and install directives look correct.
@@ -72,8 +72,8 @@ Review the output: confirm the version, download URL, and install directives loo
 ### 6. Commit and push
 
 ```bash
-git add NetKAN/ksp-mission-control.netkan
-git commit -m "Add KSP Mission Control"
+git add NetKAN/mun-control-protocol.netkan
+git commit -m "Add Mun Control Protocol"
 git push origin main
 ```
 
@@ -81,16 +81,16 @@ git push origin main
 
 Go to https://github.com/KSP-CKAN/NetKAN and open a PR from your fork's `main` branch.
 
-**Title:** `Add KSP Mission Control`
+**Title:** `Add Mun Control Protocol`
 
 **Body:**
 
 ```
-Adds KSP Mission Control, a kRPC-based MCP server bridge for AI-assisted KSP career
+Adds Mun Control Protocol, a kRPC-based MCP server bridge for AI-assisted KSP career
 management.
 
-- GitHub repository: https://github.com/richardbenson/ksp-mission-control
-- Latest release: https://github.com/richardbenson/ksp-mission-control/releases/latest
+- GitHub repository: https://github.com/richardbenson/mun-control-protocol
+- Latest release: https://github.com/richardbenson/mun-control-protocol/releases/latest
 - License: MIT
 - KSP version: 1.12.x
 - Depends on: kRPC
@@ -130,8 +130,8 @@ To verify the mod installs correctly before the NetKAN PR goes live:
 1. Download the latest CKAN client from https://github.com/KSP-CKAN/CKAN/releases
 2. In the CKAN GUI, go to **Settings → Compatible KSP Versions** and confirm `1.12.x` is listed
 3. Inflate the netkan file locally to produce a `.ckan` file (see Step 5 above)
-4. Install via CLI: `ckan install ksp-mission-control.ckan`
-5. Verify `GameData/KSPMissionControl/` appears in the KSP install
+4. Install via CLI: `ckan install mun-control-protocol.ckan`
+5. Verify `GameData/MunControlProtocol/` appears in the KSP install
 6. Verify the `mcp/` folder does **not** appear — CKAN should not install it (the `find: GameData`
    install directive scopes the install to `GameData/` only)
 
@@ -141,12 +141,12 @@ To verify the mod installs correctly before the NetKAN PR goes live:
 
 If the mod's KSP compatibility range changes, or any other field needs updating:
 
-1. Edit `ckan/ksp-mission-control.netkan` in this repository
+1. Edit `ckan/mun-control-protocol.netkan` in this repository
 2. Fork `KSP-CKAN/NetKAN` (or use your existing fork) and update the file there too
 3. Open a PR to `KSP-CKAN/NetKAN` with just the updated file
 4. Use a descriptive title, e.g.:
-   - `Update KSP Mission Control (ksp_version_max bump to 1.12.9)`
-   - `Update KSP Mission Control (add resources.spacedock field)`
+   - `Update Mun Control Protocol (ksp_version_max bump to 1.12.9)`
+   - `Update Mun Control Protocol (add resources.spacedock field)`
 
 ---
 

@@ -1,6 +1,6 @@
-# Installing KSP Mission Control
+﻿# Installing Mun Control Protocol
 
-This guide walks you through getting KSP Mission Control running with Claude Desktop. It assumes you are comfortable dropping files into `GameData/` but have never built a C# project or configured an MCP server.
+This guide walks you through getting Mun Control Protocol running with Claude Desktop. It assumes you are comfortable dropping files into `GameData/` but have never built a C# project or configured an MCP server.
 
 ---
 
@@ -37,7 +37,7 @@ Launch KSP and load any save. You should see a small kRPC server window in the b
 
 ## CKAN Installation (recommended for the KSP mod)
 
-The KSP mod component (Career DLL) is available via CKAN. Search for **KSP Mission Control**
+The KSP mod component (Career DLL) is available via CKAN. Search for **Mun Control Protocol**
 in the CKAN client and click Install. CKAN will automatically install kRPC as a dependency,
 so you can skip Step 1 below if you use this method.
 
@@ -50,15 +50,15 @@ follow the [Step 3 — Place the MCP server](#step-3--place-the-mcp-server) sect
 
 > **Skip this step if you installed via CKAN above.**
 
-1. Download the latest **KSPMissionControl-vX.Y.Z.zip** from the [GitHub releases page](https://github.com/richardbenson/ksp-mission-control/releases).
+1. Download the latest **MunControlProtocol-vX.Y.Z.zip** from the [GitHub releases page](https://github.com/richardbenson/mun-control-protocol/releases).
 2. Extract the zip.
-3. Inside the extracted folder, find `GameData/KSPMissionControl/`. Copy the entire `KSPMissionControl/` folder into your KSP `GameData/` folder.
+3. Inside the extracted folder, find `GameData/MunControlProtocol/`. Copy the entire `MunControlProtocol/` folder into your KSP `GameData/` folder.
 
 The result should be:
 
 ```
-<KSP>/GameData/KSPMissionControl/KSPMissionControl.Career.dll
-<KSP>/GameData/KSPMissionControl/KSPMissionControl.Shared.dll
+<KSP>/GameData/MunControlProtocol/MunControlProtocol.Career.dll
+<KSP>/GameData/MunControlProtocol/MunControlProtocol.Shared.dll
 ```
 
 If you have multiple KSP installs, copy into the one you chose in the Prerequisites step.
@@ -67,10 +67,10 @@ If you have multiple KSP installs, copy into the one you chose in the Prerequisi
 
 ## Step 3 — Place the MCP server
 
-1. In the same extracted zip, find the `mcp/` folder. It contains a single file: `KSPMissionControl.MCP.exe`.
-2. Copy `KSPMissionControl.MCP.exe` to a stable location where it won't get accidentally deleted:
-   - **Windows:** `C:\Tools\KSPMissionControl\`
-   - **macOS:** `~/Tools/KSPMissionControl/`
+1. In the same extracted zip, find the `mcp/` folder. It contains a single file: `MunControlProtocol.MCP.exe`.
+2. Copy `MunControlProtocol.MCP.exe` to a stable location where it won't get accidentally deleted:
+   - **Windows:** `C:\Tools\MunControlProtocol\`
+   - **macOS:** `~/Tools/MunControlProtocol/`
 3. Note the **full path** to the exe — you will need it in the next step.
 
 ---
@@ -87,7 +87,7 @@ If you have multiple KSP installs, copy into the one you chose in the Prerequisi
 {
   "mcpServers": {
     "ksp": {
-      "command": "C:\\Tools\\KSPMissionControl\\KSPMissionControl.MCP.exe"
+      "command": "C:\\Tools\\MunControlProtocol\\MunControlProtocol.MCP.exe"
     }
   }
 }

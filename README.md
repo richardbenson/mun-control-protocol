@@ -1,4 +1,4 @@
-# KSP Mission Control
+﻿# Mun Control Protocol
 
 A C# mod and companion MCP server that gives your AI assistant live read access to your Kerbal Space Program 1 career save — so you can ask Claude things like _"with my current tech and funds, what's the best Mun lander I can build?"_ and get a grounded, data-driven answer rather than a hallucinated one.
 
@@ -69,7 +69,7 @@ As a noob, I also didn't want to ask stupid questions on forums or Reddit which 
 
 ## Real example question and response
 
-[E2E test conversation](docs/ksp-mission-control-e2e-test.pdf)
+[E2E test conversation](docs/mun-control-protocol-e2e-test.pdf)
 
 > I want to get a satellite into a synchronous orbit around Kerbin. Based on my current tech tree and available parts, what engines and fuel tanks should I consider, and roughly how much delta-v will I need for a launch to orbit plus the transfer?
 
@@ -134,16 +134,16 @@ Before launching, consider upgrading **Tracking Station to t2 (38k funds)** — 
 The MCP server runs as a local console exe. Claude Desktop talks to it over stdio (MCP protocol). The exe talks to KSP over TCP using the kRPC mod.
 
 ```
-Claude Desktop  ─MCP/stdio─▶  KSPMissionControl.MCP.exe  ─kRPC/TCP─▶  KSP + kRPC mod + KSPMissionControl.Career.dll
+Claude Desktop  ─MCP/stdio─▶  MunControlProtocol.MCP.exe  ─kRPC/TCP─▶  KSP + kRPC mod + MunControlProtocol.Career.dll
 ```
 
 Three C# projects:
 
 | Project                    | Target         | Purpose                                           |
 | -------------------------- | -------------- | ------------------------------------------------- |
-| `KSPMissionControl.Shared` | netstandard2.0 | DTOs shared by both sides                         |
-| `KSPMissionControl.Career` | net472         | kRPC service extension, deployed into `GameData/` |
-| `KSPMissionControl.MCP`    | net8.0         | Console exe registered in Claude Desktop config   |
+| `MunControlProtocol.Shared` | netstandard2.0 | DTOs shared by both sides                         |
+| `MunControlProtocol.Career` | net472         | kRPC service extension, deployed into `GameData/` |
+| `MunControlProtocol.MCP`    | net8.0         | Console exe registered in Claude Desktop config   |
 
 The Career extension runs inside KSP and exposes career data over kRPC. The MCP server calls it using generated C# stubs (committed to source; regenerated when the Career service surface changes).
 
@@ -151,7 +151,7 @@ The Career extension runs inside KSP and exposes career data over kRPC. The MCP 
 
 ## Contributing
 
-The implementation plan and per-phase design docs live in [docs/ksp-mission-control/](docs/ksp-mission-control/). Dev loop: edit → `deploy/build-and-deploy.ps1` → relaunch KSP → test.
+The implementation plan and per-phase design docs live in [docs/mun-control-protocol/](docs/mun-control-protocol/). Dev loop: edit → `deploy/build-and-deploy.ps1` → relaunch KSP → test.
 
 ---
 

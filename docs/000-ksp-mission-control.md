@@ -1,4 +1,4 @@
-# KSP Mission Control
+﻿# Mun Control Protocol
 
 **Completed:** 2026-05-11
 
@@ -14,9 +14,9 @@ Three projects in one solution:
 
 | Project | Framework | Purpose |
 |---|---|---|
-| `KSPMissionControl.Shared` | netstandard2.0 | DTOs only, referenced by both other projects |
-| `KSPMissionControl.Career` | net472 | kRPC service extension, ships in `GameData/` |
-| `KSPMissionControl.MCP` | net8.0 | Console MCP server registered in Claude Desktop config |
+| `MunControlProtocol.Shared` | netstandard2.0 | DTOs only, referenced by both other projects |
+| `MunControlProtocol.Career` | net472 | kRPC service extension, ships in `GameData/` |
+| `MunControlProtocol.MCP` | net8.0 | Console MCP server registered in Claude Desktop config |
 
 Out of scope for v0.1: write-back to KSP, KSP2, multiplayer, CI/CD, VAB current-ship analysis, public release.
 
@@ -36,7 +36,7 @@ Notable corrections from expected API: tool description uses XML `<summary>` (no
 
 ### Phase 3 — Career foundation + `get_tech_tree`
 
-Introduced the `KSPMissionControl.Career` kRPC service extension — the highest-risk phase. Established the threading-safe `StateCache` pattern: a volatile reference swap of an immutable snapshot, making the 64-bit reference write atomic with no lock needed. kRPC's serialiser only handles primitives and remote-object types, not plain data records, so `TechTreeService` returns a JSON string built manually via `StringBuilder` (no extra NuGet dependency in the GameData DLL). MCP-side deserialisation uses `JsonStringEnumConverter` + `PropertyNameCaseInsensitive`.
+Introduced the `MunControlProtocol.Career` kRPC service extension — the highest-risk phase. Established the threading-safe `StateCache` pattern: a volatile reference swap of an immutable snapshot, making the 64-bit reference write atomic with no lock needed. kRPC's serialiser only handles primitives and remote-object types, not plain data records, so `TechTreeService` returns a JSON string built manually via `StringBuilder` (no extra NuGet dependency in the GameData DLL). MCP-side deserialisation uses `JsonStringEnumConverter` + `PropertyNameCaseInsensitive`.
 
 Stub generation via `krpctools` 0.5.4 does **not** require KSP to be running — it reads the deployed DLL directly. `KrpcConnection` uses type aliases (`SpaceCenterService`, `KspMcService`) to resolve ambiguity between two `Service` classes. Smoke test passed: correct tech tree data matching the in-game R&D screen.
 
@@ -58,7 +58,7 @@ Closed out all 10 MCP tools. `BuildingsService` and `DifficultyService` are pure
 
 ### Phase 8 — README + INSTALL + release packaging
 
-Corrected Phase 7 compile errors discovered during packaging: several `CommNetParams`/`DifficultyParams`/`CareerParams` field names were wrong in KSP 1.12 (see Lessons Learned below). Root `README.md` rewritten; `INSTALL.md` written for end users familiar with GameData but not C#/MCP; `deploy/package-release.ps1` produces `KSPMissionControl-vX.Y.Z.zip`. Zip verified. All 47 tests pass. Cross-platform MCP build deferred to v0.2 (Windows-only in v0.1).
+Corrected Phase 7 compile errors discovered during packaging: several `CommNetParams`/`DifficultyParams`/`CareerParams` field names were wrong in KSP 1.12 (see Lessons Learned below). Root `README.md` rewritten; `INSTALL.md` written for end users familiar with GameData but not C#/MCP; `deploy/package-release.ps1` produces `MunControlProtocol-vX.Y.Z.zip`. Zip verified. All 47 tests pass. Cross-platform MCP build deferred to v0.2 (Windows-only in v0.1).
 
 ---
 
@@ -70,7 +70,7 @@ Corrected Phase 7 compile errors discovered during packaging: several `CommNetPa
 
 - **kRPC serialiser handles primitives and remote objects only — not plain CLR records.** Returning structured data from Career procedures requires serialising to JSON string on the Career side and deserialising on the MCP side. Use `StringBuilder` in the Career DLL (no extra NuGet); use `JsonSerializer` with `PropertyNameCaseInsensitive` and `JsonStringEnumConverter` on the MCP side.
 
-- **Stub regeneration does not require a running KSP instance.** `krpctools` reads the deployed DLL directly. Exact command (after `pip install "krpctools==0.5.4" "setuptools<71"`): call `krpc-clientgen csharp KSPMissionControl <path-to-Career.dll> --ksp <KspInstallDir> -o <stubs-output-path>`. Regenerate any time the Career service surface changes; stubs are committed to source control.
+- **Stub regeneration does not require a running KSP instance.** `krpctools` reads the deployed DLL directly. Exact command (after `pip install "krpctools==0.5.4" "setuptools<71"`): call `krpc-clientgen csharp MunControlProtocol <path-to-Career.dll> --ksp <KspInstallDir> -o <stubs-output-path>`. Regenerate any time the Career service surface changes; stubs are committed to source control.
 
 - **`ResearchAndDevelopment.GetExperimentSubjects()` doesn't exist.** The subjects dictionary is internal. Retrieve it by scanning all instance fields of `ResearchAndDevelopment` for `Dictionary<string, ScienceSubject>` by type — the field name varies across KSP patches.
 

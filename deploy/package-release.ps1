@@ -1,12 +1,12 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
-    Builds and packages KSP Mission Control into a distributable zip.
+    Builds and packages Mun Control Protocol into a distributable zip.
 
 .DESCRIPTION
-    Produces KSPMissionControl-vX.Y.Z.zip containing:
-      - mcp/KSPMissionControl.MCP.exe : single self-contained exe (win-x64, no .NET runtime required)
-      - GameData/KSPMissionControl/    : KSPMissionControl.Career.dll + KSPMissionControl.Shared.dll
+    Produces MunControlProtocol-vX.Y.Z.zip containing:
+      - mcp/MunControlProtocol.MCP.exe : single self-contained exe (win-x64, no .NET runtime required)
+      - GameData/MunControlProtocol/    : MunControlProtocol.Career.dll + MunControlProtocol.Shared.dll
       - INSTALL.md
       - claude_desktop_config.example.json
 
@@ -43,8 +43,8 @@ if (-not $NoKsp -and -not $KspInstallDir) {
 $repoRoot   = Resolve-Path (Join-Path $PSScriptRoot "..")
 $publishDir = Join-Path $repoRoot "publish"
 $mcpOut     = Join-Path $publishDir "mcp"
-$gameDataOut = Join-Path $publishDir "GameData\KSPMissionControl"
-$zipPath    = Join-Path $repoRoot "KSPMissionControl-v$Version.zip"
+$gameDataOut = Join-Path $publishDir "GameData\MunControlProtocol"
+$zipPath    = Join-Path $repoRoot "MunControlProtocol-v$Version.zip"
 
 # ── Clean previous publish ────────────────────────────────────────────────────
 if (Test-Path $publishDir) {
@@ -57,8 +57,8 @@ if (Test-Path $zipPath) {
 
 # ── 1. Publish the MCP server (win-x64, self-contained single file) ──────────
 Write-Host ""
-Write-Host "Publishing KSPMissionControl.MCP (win-x64, self-contained single file)..."
-$mcpProject = Join-Path $repoRoot "src\KSPMissionControl.MCP\KSPMissionControl.MCP.csproj"
+Write-Host "Publishing MunControlProtocol.MCP (win-x64, self-contained single file)..."
+$mcpProject = Join-Path $repoRoot "src\MunControlProtocol.MCP\MunControlProtocol.MCP.csproj"
 dotnet publish $mcpProject -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:DebugType=none -p:DebugSymbols=false -o $mcpOut --nologo -v minimal
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "  MCP server published -> $mcpOut"
@@ -77,8 +77,8 @@ if (-not $KspInstallDir) {
 }
 
 Write-Host ""
-Write-Host "Building KSPMissionControl.Career (Release)..."
-$careerProject = Join-Path $repoRoot "src\KSPMissionControl.Career\KSPMissionControl.Career.csproj"
+Write-Host "Building MunControlProtocol.Career (Release)..."
+$careerProject = Join-Path $repoRoot "src\MunControlProtocol.Career\MunControlProtocol.Career.csproj"
 if ($KspInstallDir) {
     dotnet build $careerProject -c Release /p:KspInstallDir="$KspInstallDir" --nologo -v minimal
 } else {
@@ -88,11 +88,11 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 New-Item -ItemType Directory -Path $gameDataOut -Force | Out-Null
 
-$careerBin = Join-Path $repoRoot "src\KSPMissionControl.Career\bin\Release\net472"
-$sharedBin = Join-Path $repoRoot "src\KSPMissionControl.Shared\bin\Release\net472"
+$careerBin = Join-Path $repoRoot "src\MunControlProtocol.Career\bin\Release\net472"
+$sharedBin = Join-Path $repoRoot "src\MunControlProtocol.Shared\bin\Release\net472"
 
-Copy-Item -Path (Join-Path $careerBin "KSPMissionControl.Career.dll") -Destination $gameDataOut -Force
-Copy-Item -Path (Join-Path $sharedBin "KSPMissionControl.Shared.dll") -Destination $gameDataOut -Force
+Copy-Item -Path (Join-Path $careerBin "MunControlProtocol.Career.dll") -Destination $gameDataOut -Force
+Copy-Item -Path (Join-Path $sharedBin "MunControlProtocol.Shared.dll") -Destination $gameDataOut -Force
 Write-Host "  Career + Shared DLLs staged -> $gameDataOut"
 
 # ── 3. Copy install docs and example config ───────────────────────────────────

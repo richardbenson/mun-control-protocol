@@ -1,7 +1,7 @@
-{
+﻿{
   "mcpServers": {
-    "ksp-mission-control": {
-      "command": "C:\\path\\to\\KSPMissionControl.MCP.exe",
+    "mun-control-protocol": {
+      "command": "C:\\path\\to\\MunControlProtocol.MCP.exe",
       "args": []
     }
   }
