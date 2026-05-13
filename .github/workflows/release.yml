@@ -37,9 +37,10 @@ jobs:
           VERSION="${TAG#v}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          # Split into components for the AVC file
+          # Split into components for the AVC file (support both v0.1 and v0.1.0)
           IFS='.' read -r MAJOR MINOR PATCH_FULL <<< "$VERSION"
           PATCH="${PATCH_FULL%%-*}"   # strip pre-release suffix if present
+          PATCH="${PATCH:-0}"         # default to 0 for two-part tags like v0.1
           echo "major=$MAJOR" >> "$GITHUB_OUTPUT"
           echo "minor=$MINOR" >> "$GITHUB_OUTPUT"
           echo "patch=$PATCH" >> "$GITHUB_OUTPUT"
@@ -116,6 +117,22 @@ jobs:
           7z a "../MunControlProtocol-v${VERSION}.zip" .
           cd ..
 
+      - name: Extract release notes from CHANGELOG
+        id: notes
+        shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          # Pull the section for this tag out of CHANGELOG.md.
+          # Matches from "## <tag>" up to (but not including) the next "## " header.
+          awk "/^## ${TAG} /{found=1; next} found && /^## /{exit} found{print}" CHANGELOG.md \
+            > release_notes.md
+          # Fall back to a minimal note if the tag has no changelog entry.
+          if [ ! -s release_notes.md ]; then
+            echo "See [INSTALL.md](https://github.com/richardbenson/mun-control-protocol/blob/main/INSTALL.md) for installation instructions." \
+              > release_notes.md
+          fi
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -127,6 +144,6 @@ jobs:
           [[ "$PRERELEASE" == "true" ]] && FLAGS+=(--prerelease)
           gh release create "$TAG" \
             --title "Mun Control Protocol $TAG" \
-            --notes $'See [INSTALL.md](https://github.com/richardbenson/mun-control-protocol/blob/main/INSTALL.md) for installation instructions.\n\n**MCP server:** self-contained exe — no .NET runtime required.\n**KSP mod:** install to `GameData/` via CKAN or manually.' \
+            --notes-file release_notes.md \
             "${FLAGS[@]}" \
             "MunControlProtocol-${TAG}.zip"
