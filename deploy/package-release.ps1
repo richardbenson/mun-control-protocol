@@ -21,19 +21,26 @@
     Falls back to $env:KspInstallDir if not provided.
     Required only for the Career DLL build — not needed for the MCP exe.
 
+.PARAMETER NoKsp
+    Build the Career DLL against the pre-built stubs instead of a real KSP install.
+    Stubs must already be built (dotnet build lib/stubs/...). Use this in CI or on
+    machines without KSP installed.
+
 .EXAMPLE
     .\package-release.ps1 -Version "0.1.0" -KspInstallDir "C:\Games\KSP"
     .\package-release.ps1   # uses $env:KspInstallDir, version 0.1.0
+    .\package-release.ps1 -NoKsp -Version "0.2.0"
 #>
 param(
-    [string]$Version      = "0.1.0",
-    [string]$KspInstallDir = $env:KspInstallDir
+    [string]$Version       = "0.1.0",
+    [string]$KspInstallDir = $env:KspInstallDir,
+    [switch]$NoKsp
 )
 
 $ErrorActionPreference = "Stop"
 
-if (-not $KspInstallDir) {
-    Write-Error "KspInstallDir is required. Pass it as -KspInstallDir or set `$env:KspInstallDir."
+if (-not $NoKsp -and -not $KspInstallDir) {
+    Write-Error "KspInstallDir is required. Pass -KspInstallDir, set `$env:KspInstallDir, or use -NoKsp to build with stubs."
 }
 
 $repoRoot   = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -59,11 +66,27 @@ dotnet publish $mcpProject -c Release -r win-x64 --self-contained false -o $mcpO
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "  MCP server published -> $mcpOut"
 
-# ── 2. Build the Career DLL and copy into GameData layout ────────────────────
+# ── 2. Build stubs (when no KSP install) + Career DLL ────────────────────────
+if (-not $KspInstallDir) {
+    Write-Host ""
+    Write-Host "Building stubs (no KSP install)..."
+    $stubProjects = @(
+        "Assembly-CSharp", "UnityEngine.CoreModule", "UnityEngine", "KRPC.Core", "KRPC.SpaceCenter"
+    )
+    foreach ($stub in $stubProjects) {
+        dotnet build (Join-Path $repoRoot "lib\stubs\$stub\$stub.csproj") -c Release --nologo -v minimal
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    }
+}
+
 Write-Host ""
 Write-Host "Building KSPMissionControl.Career (Release)..."
 $careerProject = Join-Path $repoRoot "src\KSPMissionControl.Career\KSPMissionControl.Career.csproj"
-dotnet build $careerProject -c Release /p:KspInstallDir="$KspInstallDir" --nologo -v minimal
+if ($KspInstallDir) {
+    dotnet build $careerProject -c Release /p:KspInstallDir="$KspInstallDir" --nologo -v minimal
+} else {
+    dotnet build $careerProject -c Release --nologo -v minimal
+}
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 New-Item -ItemType Directory -Path $gameDataOut -Force | Out-Null
