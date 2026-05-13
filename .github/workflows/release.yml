@@ -1,0 +1,131 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Extract version
+        id: version
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Split into components for the AVC file
+          IFS='.' read -r MAJOR MINOR PATCH_FULL <<< "$VERSION"
+          PATCH="${PATCH_FULL%%-*}"   # strip pre-release suffix if present
+          echo "major=$MAJOR" >> "$GITHUB_OUTPUT"
+          echo "minor=$MINOR" >> "$GITHUB_OUTPUT"
+          echo "patch=$PATCH" >> "$GITHUB_OUTPUT"
+          # Mark as pre-release if tag contains a hyphen (e.g. v0.2.0-rc1)
+          if [[ "$TAG" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore
+        run: dotnet restore KSPMissionControl.sln
+
+      - name: Build stubs
+        run: |
+          dotnet build lib/stubs/Assembly-CSharp/Assembly-CSharp.csproj -c Release --no-restore
+          dotnet build lib/stubs/UnityEngine.CoreModule/UnityEngine.CoreModule.csproj -c Release --no-restore
+          dotnet build lib/stubs/UnityEngine/UnityEngine.csproj -c Release --no-restore
+          dotnet build lib/stubs/KRPC.Core/KRPC.Core.csproj -c Release --no-restore
+          dotnet build lib/stubs/KRPC.SpaceCenter/KRPC.SpaceCenter.csproj -c Release --no-restore
+
+      - name: Build solution
+        run: dotnet build KSPMissionControl.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test KSPMissionControl.sln -c Release --no-build --verbosity normal
+
+      - name: Publish MCP server (win-x64)
+        run: >
+          dotnet publish src/KSPMissionControl.MCP/KSPMissionControl.MCP.csproj
+          -c Release -r win-x64 --self-contained false
+          -o publish/mcp --no-restore --nologo
+
+      - name: Stage GameData
+        shell: bash
+        run: |
+          mkdir -p publish/GameData/KSPMissionControl
+          cp src/KSPMissionControl.Career/bin/Release/net472/KSPMissionControl.Career.dll \
+             publish/GameData/KSPMissionControl/
+          cp src/KSPMissionControl.Shared/bin/Release/net472/KSPMissionControl.Shared.dll \
+             publish/GameData/KSPMissionControl/
+
+      - name: Write AVC version file
+        shell: bash
+        env:
+          MAJOR: ${{ steps.version.outputs.major }}
+          MINOR: ${{ steps.version.outputs.minor }}
+          PATCH: ${{ steps.version.outputs.patch }}
+        run: |
+          cat > publish/GameData/KSPMissionControl/KSPMissionControl.version << EOF
+          {
+            "NAME": "KSP Mission Control",
+            "URL": "https://raw.githubusercontent.com/richardbenson/ksp-mission-control/main/GameData/KSPMissionControl/KSPMissionControl.version",
+            "DOWNLOAD": "https://github.com/richardbenson/ksp-mission-control/releases",
+            "VERSION": { "MAJOR": $MAJOR, "MINOR": $MINOR, "PATCH": $PATCH, "BUILD": 0 },
+            "KSP_VERSION_MIN": { "MAJOR": 1, "MINOR": 12, "PATCH": 0 },
+            "KSP_VERSION_MAX": { "MAJOR": 1, "MINOR": 12, "PATCH": 9 }
+          }
+          EOF
+
+      - name: Copy install docs
+        shell: bash
+        run: |
+          cp INSTALL.md publish/
+          cp deploy/claude_desktop_config.example.json publish/
+
+      - name: Create ZIP
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          cd publish
+          7z a "../KSPMissionControl-v${VERSION}.zip" .
+          cd ..
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        shell: bash
+        run: |
+          FLAGS=()
+          [[ "$PRERELEASE" == "true" ]] && FLAGS+=(--prerelease)
+          gh release create "$TAG" \
+            --title "KSP Mission Control $TAG" \
+            --notes $'See [INSTALL.md](https://github.com/richardbenson/ksp-mission-control/blob/main/INSTALL.md) for installation instructions.\n\n**MCP server:** requires [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) (x64).\n**KSP mod:** install to `GameData/` via CKAN or manually.' \
+            "${FLAGS[@]}" \
+            "KSPMissionControl-${TAG}.zip"

@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest   # net472 builds are more reliable on Windows
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore KSPMissionControl.sln
+
+      - name: Build stubs
+        run: |
+          dotnet build lib/stubs/Assembly-CSharp/Assembly-CSharp.csproj -c Release --no-restore
+          dotnet build lib/stubs/UnityEngine.CoreModule/UnityEngine.CoreModule.csproj -c Release --no-restore
+          dotnet build lib/stubs/UnityEngine/UnityEngine.csproj -c Release --no-restore
+          dotnet build lib/stubs/KRPC.Core/KRPC.Core.csproj -c Release --no-restore
+          dotnet build lib/stubs/KRPC.SpaceCenter/KRPC.SpaceCenter.csproj -c Release --no-restore
+
+      - name: Build solution
+        run: dotnet build KSPMissionControl.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test KSPMissionControl.sln -c Release --no-build --verbosity normal
