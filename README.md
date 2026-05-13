@@ -4,7 +4,7 @@ A C# mod and companion MCP server that gives your AI assistant live read access 
 
 Supports **KSP 1.12.x**. KSP2 is not supported.
 
-**v0.1 — first usable release** · Windows · Claude Desktop (and any MCP-compatible client)
+**v0.1 — first usable release** · Windows · Tested with Claude Desktop, Claude Code, Cursor, VS Code (GitHub Copilot), and Windsurf — see [INSTALL.md](INSTALL.md#step-4--configure-your-mcp-client) for per-client setup
 
 ---
 
@@ -131,10 +131,10 @@ Before launching, consider upgrading **Tracking Station to t2 (38k funds)** — 
 
 ## Architecture
 
-The MCP server runs as a local console exe. Claude Desktop talks to it over stdio (MCP protocol). The exe talks to KSP over TCP using the kRPC mod.
+The MCP server runs as a local console exe. Your MCP client (Claude Desktop, Cursor, VS Code, Windsurf, Claude Code, …) talks to it over stdio (MCP protocol). The exe talks to KSP over TCP using the kRPC mod.
 
 ```
-Claude Desktop  ─MCP/stdio─▶  MunControlProtocol.MCP.exe  ─kRPC/TCP─▶  KSP + kRPC mod + MunControlProtocol.Career.dll
+MCP client  ─MCP/stdio─▶  MunControlProtocol.MCP.exe  ─kRPC/TCP─▶  KSP + kRPC mod + MunControlProtocol.Career.dll
 ```
 
 Three C# projects:
@@ -143,7 +143,7 @@ Three C# projects:
 | -------------------------- | -------------- | ------------------------------------------------- |
 | `MunControlProtocol.Shared` | netstandard2.0 | DTOs shared by both sides                         |
 | `MunControlProtocol.Career` | net472         | kRPC service extension, deployed into `GameData/` |
-| `MunControlProtocol.MCP`    | net8.0         | Console exe registered in Claude Desktop config   |
+| `MunControlProtocol.MCP`    | net8.0         | Console exe registered in your MCP client config  |
 
 The Career extension runs inside KSP and exposes career data over kRPC. The MCP server calls it using generated C# stubs (committed to source; regenerated when the Career service surface changes).
 
