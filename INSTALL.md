@@ -9,7 +9,6 @@ This guide walks you through getting KSP Mission Control running with Claude Des
 Before you start, make sure you have:
 
 - **KSP 1.12.x** — KSP2 is not supported. If you have multiple KSP installs (modded and stock), decide which one you want to use and keep it in mind throughout this guide.
-- **[.NET 8 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)** — install the *Runtime*, not the SDK. The MCP server exe needs this; it does not bundle the runtime itself.
 - **Claude Desktop** — installed and signed in.
 - **A career-mode save** — a Sandbox save works for `get_vessels` and `get_body_info`; a Science save works for most tools; a Career save is needed for funds, reputation, buildings, and difficulty settings.
 
@@ -68,11 +67,11 @@ If you have multiple KSP installs, copy into the one you chose in the Prerequisi
 
 ## Step 3 — Place the MCP server
 
-1. In the same extracted zip, find the `mcp/` folder. It contains `KSPMissionControl.MCP.exe` and its supporting `.dll` files.
-2. Move the entire `mcp/` folder to a stable location where it won't get accidentally deleted:
-   - **Windows:** `C:\Tools\KSPMissionControl\mcp\`
-   - **macOS:** `~/Tools/KSPMissionControl/mcp/`
-3. Note the **full path** to `KSPMissionControl.MCP.exe` — you will need it in the next step.
+1. In the same extracted zip, find the `mcp/` folder. It contains a single file: `KSPMissionControl.MCP.exe`.
+2. Copy `KSPMissionControl.MCP.exe` to a stable location where it won't get accidentally deleted:
+   - **Windows:** `C:\Tools\KSPMissionControl\`
+   - **macOS:** `~/Tools/KSPMissionControl/`
+3. Note the **full path** to the exe — you will need it in the next step.
 
 ---
 
@@ -88,7 +87,7 @@ If you have multiple KSP installs, copy into the one you chose in the Prerequisi
 {
   "mcpServers": {
     "ksp": {
-      "command": "C:\\Tools\\KSPMissionControl\\mcp\\KSPMissionControl.MCP.exe"
+      "command": "C:\\Tools\\KSPMissionControl\\KSPMissionControl.MCP.exe"
     }
   }
 }
@@ -96,7 +95,7 @@ If you have multiple KSP installs, copy into the one you chose in the Prerequisi
 
 If `"mcpServers"` already exists with other entries, add `"ksp"` alongside them — do not replace the existing entries.
 
-The `mcp/` folder extracted in Step 3 also contains a ready-made `claude_desktop_config.example.json` you can use as a reference.
+A ready-made `claude_desktop_config.example.json` is included in the zip — use it as a reference template.
 
 ---
 

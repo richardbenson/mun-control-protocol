@@ -67,10 +67,11 @@ jobs:
       - name: Test
         run: dotnet test KSPMissionControl.sln -c Release --no-build --verbosity normal
 
-      - name: Publish MCP server (win-x64)
+      - name: Publish MCP server (win-x64, self-contained single file)
         run: >
           dotnet publish src/KSPMissionControl.MCP/KSPMissionControl.MCP.csproj
-          -c Release -r win-x64 --self-contained false
+          -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+          -p:DebugType=none -p:DebugSymbols=false
           -o publish/mcp --no-restore --nologo
 
       - name: Stage GameData
@@ -126,6 +127,6 @@ jobs:
           [[ "$PRERELEASE" == "true" ]] && FLAGS+=(--prerelease)
           gh release create "$TAG" \
             --title "KSP Mission Control $TAG" \
-            --notes $'See [INSTALL.md](https://github.com/richardbenson/ksp-mission-control/blob/main/INSTALL.md) for installation instructions.\n\n**MCP server:** requires [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) (x64).\n**KSP mod:** install to `GameData/` via CKAN or manually.' \
+            --notes $'See [INSTALL.md](https://github.com/richardbenson/ksp-mission-control/blob/main/INSTALL.md) for installation instructions.\n\n**MCP server:** self-contained exe — no .NET runtime required.\n**KSP mod:** install to `GameData/` via CKAN or manually.' \
             "${FLAGS[@]}" \
             "KSPMissionControl-${TAG}.zip"

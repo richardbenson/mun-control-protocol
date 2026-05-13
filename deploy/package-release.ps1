@@ -5,13 +5,10 @@
 
 .DESCRIPTION
     Produces KSPMissionControl-vX.Y.Z.zip containing:
-      - mcp/         : KSPMissionControl.MCP.exe and its runtime dependencies (win-x64, framework-dependent)
-      - GameData/KSPMissionControl/ : KSPMissionControl.Career.dll + KSPMissionControl.Shared.dll
+      - mcp/KSPMissionControl.MCP.exe : single self-contained exe (win-x64, no .NET runtime required)
+      - GameData/KSPMissionControl/    : KSPMissionControl.Career.dll + KSPMissionControl.Shared.dll
       - INSTALL.md
       - claude_desktop_config.example.json
-
-    The .NET 8 runtime is NOT bundled (framework-dependent publish). End users must
-    install the .NET 8 Runtime separately — see INSTALL.md Prerequisites.
 
 .PARAMETER Version
     Version string used in the zip filename. Defaults to "0.1.0".
@@ -58,11 +55,11 @@ if (Test-Path $zipPath) {
     Remove-Item -Force $zipPath
 }
 
-# ── 1. Publish the MCP server (win-x64, framework-dependent) ─────────────────
+# ── 1. Publish the MCP server (win-x64, self-contained single file) ──────────
 Write-Host ""
-Write-Host "Publishing KSPMissionControl.MCP (win-x64, framework-dependent)..."
+Write-Host "Publishing KSPMissionControl.MCP (win-x64, self-contained single file)..."
 $mcpProject = Join-Path $repoRoot "src\KSPMissionControl.MCP\KSPMissionControl.MCP.csproj"
-dotnet publish $mcpProject -c Release -r win-x64 --self-contained false -o $mcpOut --nologo -v minimal
+dotnet publish $mcpProject -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:DebugType=none -p:DebugSymbols=false -o $mcpOut --nologo -v minimal
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "  MCP server published -> $mcpOut"
 
