@@ -99,4 +99,36 @@ public sealed class BodiesToolsTests
         var b = Assert.Single(result);
         Assert.Equal(21549.4, b.RotationPeriodS, 1);
     }
+
+    [Fact]
+    public async Task GetBodyInfoAsync_KerbinGravitationalParameter_MatchesGTimesM()
+    {
+        var mock = new Mock<IKrpcConnection>();
+        mock.Setup(c => c.GetBodyInfo(null)).Returns($"[{KerbinJson}]");
+
+        var tool = new BodiesTools(mock.Object);
+        var result = await tool.GetBodyInfoAsync();
+
+        var b        = Assert.Single(result);
+        var expected = 6.674e-11 * b.Mass;
+        Assert.Equal(expected, b.GravitationalParameterM3S2, 1);
+        // Sanity-check the magnitude — Kerbin μ should be ~3.53e12 m³/s²
+        Assert.InRange(b.GravitationalParameterM3S2, 3.5e12, 3.6e12);
+    }
+
+    [Fact]
+    public async Task GetBodyInfoAsync_MunGravitationalParameter_MatchesGTimesM()
+    {
+        var mock = new Mock<IKrpcConnection>();
+        mock.Setup(c => c.GetBodyInfo(null)).Returns($"[{MunJson}]");
+
+        var tool = new BodiesTools(mock.Object);
+        var result = await tool.GetBodyInfoAsync();
+
+        var b        = Assert.Single(result);
+        var expected = 6.674e-11 * b.Mass;
+        Assert.Equal(expected, b.GravitationalParameterM3S2, 1);
+        // Sanity-check the magnitude — Mun μ should be ~6.51e10 m³/s²
+        Assert.InRange(b.GravitationalParameterM3S2, 6.4e10, 6.6e10);
+    }
 }

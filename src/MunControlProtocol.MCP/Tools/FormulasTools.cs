@@ -1,12 +1,12 @@
-﻿using ModelContextProtocol.Server;
+using System.ComponentModel;
+using ModelContextProtocol.Server;
 
 namespace MunControlProtocol.MCP.Tools;
 
 [McpServerToolType]
 internal sealed class FormulasTools
 {
-    private const double G  = 6.674e-11; // N·m²/kg²
-    private const double G0 = 9.80665;   // standard gravity, m/s²
+    private const double G0 = 9.80665; // standard gravity, m/s²
 
     /// <summary>
     /// Tsiolkovsky rocket equation: ΔV = Isp × 9.80665 × ln(m_wet / m_dry).
@@ -31,42 +31,44 @@ internal sealed class FormulasTools
     }
 
     /// <summary>
-    /// Circular orbital velocity at a given altitude: v = √(μ / r), where μ = G×M and r = body_radius_m + altitude_m.
-    /// Get body_mass_kg and body_radius_m from get_body_info.
+    /// Circular orbital velocity at a given altitude: v = √(μ / r), where r = body_radius_m + altitude_m.
+    /// Get body_gravitational_parameter_m3s2 and body_radius_m from get_body_info.
     /// </summary>
     [McpServerTool(Name = "calculate_orbital_velocity")]
     public Task<OrbitalVelocityResult> CalculateOrbitalVelocityAsync(
-        double body_mass_kg,
+        [Description("Standard gravitational parameter μ = G×M in m³/s², from GravitationalParameterM3S2 in get_body_info. Example: Mun ≈ 6.514e10, Kerbin ≈ 3.532e12. Copy the exact value — do not truncate or round.")]
+        double body_gravitational_parameter_m3s2,
+        [Description("Body surface radius in metres, from Radius in get_body_info. Example: Mun = 200000, Kerbin = 600000.")]
         double body_radius_m,
         double altitude_m)
     {
-        if (body_mass_kg <= 0) throw new ArgumentException("body_mass_kg must be positive.");
+        if (body_gravitational_parameter_m3s2 <= 0) throw new ArgumentException("body_gravitational_parameter_m3s2 must be positive.");
         if (body_radius_m <= 0) throw new ArgumentException("body_radius_m must be positive.");
         if (altitude_m < 0) throw new ArgumentException("altitude_m cannot be negative.");
 
-        var mu = G * body_mass_kg;
-        var r  = body_radius_m + altitude_m;
-        var v  = Math.Sqrt(mu / r);
+        var r = body_radius_m + altitude_m;
+        var v = Math.Sqrt(body_gravitational_parameter_m3s2 / r);
         return Task.FromResult(new OrbitalVelocityResult(v));
     }
 
     /// <summary>
     /// Orbital period of a circular orbit at a given altitude: T = 2π × √(r³ / μ).
-    /// Get body_mass_kg and body_radius_m from get_body_info.
+    /// Get body_gravitational_parameter_m3s2 and body_radius_m from get_body_info.
     /// </summary>
     [McpServerTool(Name = "calculate_orbital_period")]
     public Task<OrbitalPeriodResult> CalculateOrbitalPeriodAsync(
-        double body_mass_kg,
+        [Description("Standard gravitational parameter μ = G×M in m³/s², from GravitationalParameterM3S2 in get_body_info. Example: Mun ≈ 6.514e10, Kerbin ≈ 3.532e12. Copy the exact value — do not truncate or round.")]
+        double body_gravitational_parameter_m3s2,
+        [Description("Body surface radius in metres, from Radius in get_body_info. Example: Mun = 200000, Kerbin = 600000.")]
         double body_radius_m,
         double altitude_m)
     {
-        if (body_mass_kg <= 0) throw new ArgumentException("body_mass_kg must be positive.");
+        if (body_gravitational_parameter_m3s2 <= 0) throw new ArgumentException("body_gravitational_parameter_m3s2 must be positive.");
         if (body_radius_m <= 0) throw new ArgumentException("body_radius_m must be positive.");
         if (altitude_m < 0) throw new ArgumentException("altitude_m cannot be negative.");
 
-        var mu = G * body_mass_kg;
-        var r  = body_radius_m + altitude_m;
-        var t  = 2.0 * Math.PI * Math.Sqrt(r * r * r / mu);
+        var r = body_radius_m + altitude_m;
+        var t = 2.0 * Math.PI * Math.Sqrt(r * r * r / body_gravitational_parameter_m3s2);
         return Task.FromResult(new OrbitalPeriodResult(t));
     }
 
@@ -77,20 +79,22 @@ internal sealed class FormulasTools
     /// </summary>
     [McpServerTool(Name = "calculate_hohmann_transfer")]
     public Task<HohmannResult> CalculateHohmannTransferAsync(
-        double body_mass_kg,
+        [Description("Standard gravitational parameter μ = G×M in m³/s², from GravitationalParameterM3S2 in get_body_info. Example: Mun ≈ 6.514e10, Kerbin ≈ 3.532e12. Copy the exact value — do not truncate or round.")]
+        double body_gravitational_parameter_m3s2,
+        [Description("Body surface radius in metres, from Radius in get_body_info. Example: Mun = 200000, Kerbin = 600000.")]
         double body_radius_m,
         double current_altitude_m,
         double target_altitude_m)
     {
-        if (body_mass_kg <= 0) throw new ArgumentException("body_mass_kg must be positive.");
+        if (body_gravitational_parameter_m3s2 <= 0) throw new ArgumentException("body_gravitational_parameter_m3s2 must be positive.");
         if (body_radius_m <= 0) throw new ArgumentException("body_radius_m must be positive.");
         if (current_altitude_m < 0) throw new ArgumentException("current_altitude_m cannot be negative.");
         if (target_altitude_m < 0) throw new ArgumentException("target_altitude_m cannot be negative.");
 
-        var mu = G * body_mass_kg;
+        var mu = body_gravitational_parameter_m3s2;
         var r1 = body_radius_m + current_altitude_m;
         var r2 = body_radius_m + target_altitude_m;
-        var a  = (r1 + r2) / 2.0; // semi-major axis of transfer ellipse
+        var a  = (r1 + r2) / 2.0;
 
         var v1Circ     = Math.Sqrt(mu / r1);
         var v2Circ     = Math.Sqrt(mu / r2);
@@ -111,17 +115,18 @@ internal sealed class FormulasTools
     /// </summary>
     [McpServerTool(Name = "calculate_escape_velocity")]
     public Task<EscapeVelocityResult> CalculateEscapeVelocityAsync(
-        double body_mass_kg,
+        [Description("Standard gravitational parameter μ = G×M in m³/s², from GravitationalParameterM3S2 in get_body_info. Example: Mun ≈ 6.514e10, Kerbin ≈ 3.532e12. Copy the exact value — do not truncate or round.")]
+        double body_gravitational_parameter_m3s2,
+        [Description("Body surface radius in metres, from Radius in get_body_info. Example: Mun = 200000, Kerbin = 600000.")]
         double body_radius_m,
         double altitude_m = 0)
     {
-        if (body_mass_kg <= 0) throw new ArgumentException("body_mass_kg must be positive.");
+        if (body_gravitational_parameter_m3s2 <= 0) throw new ArgumentException("body_gravitational_parameter_m3s2 must be positive.");
         if (body_radius_m <= 0) throw new ArgumentException("body_radius_m must be positive.");
         if (altitude_m < 0) throw new ArgumentException("altitude_m cannot be negative.");
 
-        var mu   = G * body_mass_kg;
         var r    = body_radius_m + altitude_m;
-        var vEsc = Math.Sqrt(2.0 * mu / r);
+        var vEsc = Math.Sqrt(2.0 * body_gravitational_parameter_m3s2 / r);
         return Task.FromResult(new EscapeVelocityResult(vEsc));
     }
 
@@ -132,20 +137,21 @@ internal sealed class FormulasTools
     /// </summary>
     [McpServerTool(Name = "calculate_synchronous_orbit")]
     public Task<SynchronousOrbitResult> CalculateSynchronousOrbitAsync(
-        double body_mass_kg,
+        [Description("Standard gravitational parameter μ = G×M in m³/s², from GravitationalParameterM3S2 in get_body_info. Example: Mun ≈ 6.514e10, Kerbin ≈ 3.532e12. Copy the exact value — do not truncate or round.")]
+        double body_gravitational_parameter_m3s2,
+        [Description("Body surface radius in metres, from Radius in get_body_info. Example: Mun = 200000, Kerbin = 600000.")]
         double body_radius_m,
         double rotation_period_s)
     {
-        if (body_mass_kg <= 0) throw new ArgumentException("body_mass_kg must be positive.");
+        if (body_gravitational_parameter_m3s2 <= 0) throw new ArgumentException("body_gravitational_parameter_m3s2 must be positive.");
         if (body_radius_m <= 0) throw new ArgumentException("body_radius_m must be positive.");
         if (rotation_period_s <= 0) throw new ArgumentException("rotation_period_s must be positive.");
 
-        var mu          = G * body_mass_kg;
-        var a           = Math.Pow(mu * rotation_period_s * rotation_period_s / (4.0 * Math.PI * Math.PI), 1.0 / 3.0);
-        var altitudeM   = a - body_radius_m;
-        var velocityMs  = Math.Sqrt(mu / a);
+        var mu         = body_gravitational_parameter_m3s2;
+        var a          = Math.Pow(mu * rotation_period_s * rotation_period_s / (4.0 * Math.PI * Math.PI), 1.0 / 3.0);
+        var altitudeM  = a - body_radius_m;
+        var velocityMs = Math.Sqrt(mu / a);
 
-        // A negative altitude means the synchronous orbit is below the surface (e.g. fast-rotating body).
         double? reportedAlt = altitudeM >= 0 ? altitudeM : null;
         return Task.FromResult(new SynchronousOrbitResult(reportedAlt, velocityMs));
     }

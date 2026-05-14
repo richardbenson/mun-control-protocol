@@ -10,7 +10,6 @@ public sealed class ScienceSubject
     public string Title { get; set; } = "";
     public double Earned { get; set; }
     public double Cap { get; set; }
-    public double Remaining { get; set; }
     public double SubjectValue { get; set; }
     public double ScienceMultiplier { get; set; }
 }

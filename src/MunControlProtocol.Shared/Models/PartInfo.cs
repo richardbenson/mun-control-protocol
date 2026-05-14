@@ -1,4 +1,4 @@
-﻿using MunControlProtocol.Shared.Models.PartModules;
+using MunControlProtocol.Shared.Models.PartModules;
 
 namespace MunControlProtocol.Shared.Models;
 
