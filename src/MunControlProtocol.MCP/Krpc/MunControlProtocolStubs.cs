@@ -46,6 +46,13 @@ namespace KRPC.Client.Services.MunControlProtocol
             return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
         }
 
+        [global::KRPC.Client.Attributes.RPCAttribute ("MunControlProtocol", "GetCurrentCraft")]
+        public string GetCurrentCraft ()
+        {
+            ByteString _data = connection.Invoke ("MunControlProtocol", "GetCurrentCraft");
+            return (string)global::KRPC.Client.Encoder.Decode (_data, typeof(string), connection);
+        }
+
         [global::KRPC.Client.Attributes.RPCAttribute ("MunControlProtocol", "GetDifficultySettings")]
         public string GetDifficultySettings ()
         {

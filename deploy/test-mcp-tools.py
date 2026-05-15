@@ -21,6 +21,7 @@ import threading
 # Keep this list in sync with the WithTools<> registrations in Program.cs.
 EXPECTED_TOOLS = [
     # Live career data tools
+    "get_current_craft",
     "get_career_state",
     "get_tech_tree",
     "get_parts_by_category",
