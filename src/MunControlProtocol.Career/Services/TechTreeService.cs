@@ -46,6 +46,10 @@ public static class TechTreeService
     [KRPCProcedure]
     public static string GetKerbals() => KerbalsService.GetKerbals();
 
+    /// <summary>Returns the current craft in the VAB or SPH as a JSON object, or "null" if no craft is loaded or the editor is not open.</summary>
+    [KRPCProcedure]
+    public static string GetCurrentCraft() => EditorService.GetCurrentCraft();
+
     internal static void RefreshCache()
     {
         var rd = ResearchAndDevelopment.Instance;
