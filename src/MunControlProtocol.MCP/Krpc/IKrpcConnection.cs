@@ -14,5 +14,6 @@ internal interface IKrpcConnection : IDisposable
     string GetDifficultySettings();
     string GetVessels(bool includeDebris);
     string GetKerbals();
+    string GetCurrentCraft();
     string GetBodyInfo(string? body);
 }
