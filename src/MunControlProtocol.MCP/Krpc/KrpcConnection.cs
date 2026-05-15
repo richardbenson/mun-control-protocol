@@ -56,6 +56,7 @@ internal sealed class KrpcConnection : IKrpcConnection
     string IKrpcConnection.GetBuildingLevels()                       => MunControlProtocol.GetBuildingLevels();
     string IKrpcConnection.GetDifficultySettings()                   => MunControlProtocol.GetDifficultySettings();
     string IKrpcConnection.GetKerbals()                              => MunControlProtocol.GetKerbals();
+    string IKrpcConnection.GetCurrentCraft()                          => MunControlProtocol.GetCurrentCraft();
 
     string IKrpcConnection.GetVessels(bool includeDebris)
     {
