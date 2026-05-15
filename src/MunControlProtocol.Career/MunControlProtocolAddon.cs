@@ -11,6 +11,7 @@ namespace MunControlProtocol.Career;
 public sealed class MunControlProtocolAddon : MonoBehaviour
 {
     private float _lastTechTreeRefresh  = -999f;
+    private float _lastEditorRefresh    = -999f;
     private float _lastScienceRefresh   = -999f;
     private float _lastBuildingsRefresh = -999f;
 
@@ -36,6 +37,16 @@ public sealed class MunControlProtocolAddon : MonoBehaviour
 
         TechTreeService.RefreshCache();
         PartsService.RefreshCache();
+
+        // Editor craft data changes as the player places/removes parts — 1s is sufficient.
+        if (scene == GameScenes.EDITOR)
+        {
+            if (Time.realtimeSinceStartup - _lastEditorRefresh >= 1f)
+            {
+                _lastEditorRefresh = Time.realtimeSinceStartup;
+                EditorService.RefreshCache();
+            }
+        }
 
         // Science matrix is large; refresh every 5 seconds is sufficient.
         if (Time.realtimeSinceStartup - _lastScienceRefresh >= 5f)
