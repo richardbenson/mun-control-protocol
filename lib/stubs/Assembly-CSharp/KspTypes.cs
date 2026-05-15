@@ -152,6 +152,23 @@ public class Part
     public int CrewCapacity;
     public PartResourceList Resources => throw new NotImplementedException();
     public PartModuleList Modules => throw new NotImplementedException();
+    public AvailablePart partInfo;
+    public int inverseStage;
+}
+
+public enum EditorFacility { None = -1, VAB = 0, SPH = 1 }
+
+public class ShipConstruct
+{
+    public string shipName;
+    public EditorFacility shipFacility;
+    public List<Part> parts => throw new NotImplementedException();
+}
+
+public class EditorLogic
+{
+    public static EditorLogic fetch => throw new NotImplementedException();
+    public ShipConstruct ship => throw new NotImplementedException();
 }
 
 public class PartResourceList : IEnumerable<PartResource>
