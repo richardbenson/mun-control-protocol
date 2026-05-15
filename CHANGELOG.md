@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2 — 2026-05-15
+
+### Changes
+
+- **`get_tech_tree`** now accepts a `status` filter (`Locked`, `Available`, or `Unlocked`) so you can query only the nodes you care about. Part names are now opt-in (`include_parts=false` by default), saving around 2k tokens for a typical full-tree query.
+- **`get_parts_by_category`** no longer includes module details in its response — use `get_part_stats` for per-part module data. Combined with null-field suppression this significantly reduces response size for large part catalogs.
+- **Formula tools** now take `body_gravitational_parameter_m3s2` (μ = G×M) instead of `body_mass_kg`. Large masses like Kerbin's (5.29 × 10²² kg) caused exponent miscounting in LLM arithmetic; μ values are in the 10¹⁰–10¹² range and copy directly from `get_body_info`.
+- **`get_body_info`** now returns `gravitational_parameter_m3s2` alongside the existing body properties.
+- **`get_science_status`** no longer returns a `Remaining` field on each subject — it is always `Cap − Earned` and can be computed by the model.
+
 ## v0.1 — 2026-05-13
 
 First public release of Mun Control Protocol.
