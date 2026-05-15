@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3 — 2026-05-15
+
+### Features
+
+- **`get_current_craft`** — inspect the craft currently open in the VAB or SPH. Returns all parts with their names, resources, staging info, and module details (engines, tanks, antennas, etc.), giving Claude a full picture of a design in progress without leaving the editor.
+
+### Fixes
+
+- **`get_building_levels`** returned levels that were off by one. Facility levels now report the correct upgrade tier.
+
 ## v0.2 — 2026-05-15
 
 ### Changes
