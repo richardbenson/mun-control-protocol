@@ -5,7 +5,7 @@
 | 1 | KSP Stubs + Shared Models | complete | `feature/editor-craft-reader-phase-1` | — |
 | 2 | EditorService — KSP Addon | complete | `feature/editor-craft-reader-phase-2` | Phase 1 |
 | 3 | MCP Plumbing + EditorTools | complete | `feature/editor-craft-reader-phase-3` | Phase 2 |
-| 4 | Tests | not-started | `feature/editor-craft-reader-phase-4` | Phase 3 |
+| 4 | Tests | complete | `feature/editor-craft-reader-phase-4` | Phase 3 |
 
 ## Phase Details
 
@@ -28,7 +28,7 @@
 - **Notes**: —
 
 ### Phase 4 — Tests
-- **Status**: not-started
-- **Started**: —
-- **Completed**: —
+- **Status**: complete
+- **Started**: 2026-05-15
+- **Completed**: 2026-05-15
 - **Notes**: —
