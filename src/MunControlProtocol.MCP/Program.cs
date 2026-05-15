@@ -23,6 +23,7 @@ try
         .WithTools<VesselsTools>()
         .WithTools<ScienceTools>()
         .WithTools<KerbalsTools>()
+        .WithTools<EditorTools>()
         .WithTools<FormulasTools>();
 
     await builder.Build().RunAsync();
