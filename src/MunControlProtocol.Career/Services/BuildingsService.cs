@@ -46,12 +46,13 @@ public static class BuildingsService
     }
 
     // GetFacilityLevel returns a float 0..1 where 0 = unupgraded, 1 = max level.
-    // Multiply by (levelCount - 1) to get the 0-indexed integer level.
+    // GetFacilityLevelCount returns the number of upgrade steps (e.g. 2 for a standard
+    // 3-tier building), not the total level count. Multiply directly — no (n-1) needed.
     private static int GetLevel(string facilityId)
     {
         float normalized = ScenarioUpgradeableFacilities.GetFacilityLevel(facilityId);
         int levelCount = ScenarioUpgradeableFacilities.GetFacilityLevelCount(facilityId);
-        if (levelCount <= 1) return 0;
-        return Mathf.RoundToInt(normalized * (levelCount - 1));
+        if (levelCount <= 0) return 0;
+        return Mathf.RoundToInt(normalized * levelCount);
     }
 }
